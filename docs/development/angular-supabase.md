@@ -15,23 +15,31 @@ La aplicación utiliza el SDK oficial de Supabase para:
 
 # 2. Configuración
 
+Se debe instalar el SDK de Supabase para poder utilizar los servicios del mismo.
+```npm install @supabase/supabase-js```
+
 Las credenciales deben almacenarse mediante variables de entorno.
+
+Generar environment con ```ng generate environments```
 
 Ejemplo:
 
 ```text
-environment.ts
+src/environments/environment.ts
 ```
 
 ```typescript
 export const environment = {
   production: false,
 
-  supabaseUrl: 'https://djugeltwqubmmhjrpqkw.supabase.co',
+  supabaseUrl: 'SUPABASE_URL',
 
-  supabaseAnonKey: 'TU_SUPABASE_ANON_KEY',
+  supabaseAnonKey: 'SUPABASE_ANON_KEY',
 };
 ```
+
+Reemplazar ```SUPABASE_URL``` por ```https://djugeltwqubmmhjrpqkw.supabase.co``` (URL real del Proyecto SportHub)
+Reemplazar ```SUPABASE_ANON_KEY``` por ```eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqdWdlbHR3cXVibW1oanJwcWt3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUyNDc4NDMsImV4cCI6MjEwMDgyMzg0M30.KUFcX35kk2d4H4mmLoCZXsGclIBxzjt1yYys9hVTYlo```
 
 Nunca se debe incluir:
 
