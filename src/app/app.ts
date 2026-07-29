@@ -1,6 +1,7 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { SupabaseService } from './core/services/supabase.service';
+
+import { AuthService } from './core/services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -8,24 +9,10 @@ import { SupabaseService } from './core/services/supabase.service';
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
-export class App {
-  //protected readonly title = signal('sporthub');
-
-  private readonly supabaseService = inject(SupabaseService);
+export class App implements OnInit {
+  private readonly authService = inject(AuthService);
 
   ngOnInit(): void {
-    void this.testConnection();
-  }
-
-  private async testConnection(): Promise<void> {
-    const client = this.supabaseService.getClient();
-    const { data, error } = await client.from('profiles').select('*').limit(1);
-
-    if (error) {
-      console.error('Error de conexión:', error);
-      return;
-    }
-
-    console.log('Conexión exitosa:', data);
+    void this.authService.initializeAuth();
   }
 }
