@@ -1,8 +1,10 @@
 import { Component, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { ProfileComponent } from '../../../profile/pages/profile/profile.component';
 
 import { AuthService } from '../../../../core/services/auth.service';
+import { ProfileService } from '../../../../core/services/profile.service';
 
 @Component({
   selector: 'app-login',
@@ -16,6 +18,7 @@ export class LoginComponent {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly profileService = inject(ProfileService);
   // Estado UI
   readonly loading = signal(false);
   readonly errorMessage = signal('');
@@ -37,7 +40,12 @@ export class LoginComponent {
       // Llamar a AuthService
       await this.authService.login(credentials);
       // Navegar
-      await this.router.navigate(['/profile']);
+      const profile = await this.profileService.getProfile();
+      if (profile.role === 'CUSTOMER') {
+        await this.router.navigate(['/profile']);
+      } else {
+        await this.router.navigate(['/admin']);
+      }
     } catch {
       // Mostrar error
       this.errorMessage.set('Correo o contraseña incorrectos.');
