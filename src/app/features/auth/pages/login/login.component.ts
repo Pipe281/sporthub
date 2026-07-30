@@ -5,11 +5,11 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
-  selector: 'login',
+  selector: 'app-login',
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink],
-  templateUrl: './login.html',
-  styleUrl: './login.scss',
+  templateUrl: './login.component.html',
+  styleUrl: './login.component.scss',
 })
 export class LoginComponent {
   // Dependencias
@@ -37,7 +37,7 @@ export class LoginComponent {
       // Llamar a AuthService
       await this.authService.login(credentials);
       // Navegar
-      await this.router.navigate(['/login']);
+      await this.router.navigate(['/profile']);
     } catch {
       // Mostrar error
       this.errorMessage.set('Correo o contraseña incorrectos.');
