@@ -1,0 +1,38 @@
+@if (loading()) {
+  <p>Cargando perfil...</p>
+} @else if (errorMessage()) {
+  <p>{{ errorMessage() }}</p>
+} @else {
+  <h1>Mi Perfil</h1>
+
+  @if (!editing()) {
+    <div>
+      <p><strong>Nombre:</strong> {{ profile()?.first_name }}</p>
+      <p><strong>Apellido:</strong> {{ profile()?.last_name }}</p>
+      <p><strong>Teléfono:</strong> {{ profile()?.phone || 'No registrado' }}</p>
+    </div>
+
+    <button type="button" (click)="startEditing()">Editar datos</button>
+  } @else {
+    <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+      <div>
+        <label for="first_name">Nombre</label>
+        <input id="first_name" type="text" formControlName="first_name" />
+      </div>
+
+      <div>
+        <label for="last_name">Apellido</label>
+        <input id="last_name" type="text" formControlName="last_name" />
+      </div>
+
+      <div>
+        <label for="phone">Teléfono</label>
+        <input id="phone" type="text" formControlName="phone" />
+      </div>
+
+      <button type="submit" [disabled]="profileForm.invalid">Guardar cambios</button>
+
+      <button type="button" (click)="cancelEditing()">Cancelar</button>
+    </form>
+  }
+}
