@@ -1,0 +1,37 @@
+<form [formGroup]="registerForm" (ngSubmit)="register()">
+  <label>Nombre</label>
+  <input type="text" formControlName="firstName" />
+
+  <label>Apellido</label>
+  <input type="text" formControlName="lastName" />
+
+  <label>Correo</label>
+  <input type="email" formControlName="email" />
+
+  <label>Teléfono</label>
+  <input type="text" formControlName="phone" />
+
+  <label>Contraseña</label>
+  <input type="password" formControlName="password" />
+
+  <label>Confirmar contraseña</label>
+  <input type="password" formControlName="confirmPassword" />
+
+  <button type="submit" [disabled]="loading()">
+    @if (loading()) {
+      Creando cuenta...
+    } @else {
+      Crear cuenta
+    }
+  </button>
+  @if (successMessage()) {
+    <p class="success-message">
+      {{ successMessage() }}
+    </p>
+  }
+  @if (errorMessage()) {
+    <p class="error-message">
+      {{ errorMessage() }}
+    </p>
+  }
+</form>

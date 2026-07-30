@@ -46,8 +46,8 @@ export class AuthService {
       password: request.password,
       options: {
         data: {
-          firstName: request.firstName,
-          lastName: request.lastName,
+          first_name: request.firstName,
+          last_name: request.lastName,
           phone: request.phone,
         },
       },
