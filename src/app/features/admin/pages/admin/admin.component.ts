@@ -1,0 +1,11 @@
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-admin',
+  standalone: true,
+  template: `
+    <h1>Panel de Administración</h1>
+    <p>Bienvenido al área administrativa.</p>
+  `,
+})
+export class AdminComponent {}
