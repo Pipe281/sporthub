@@ -3,6 +3,8 @@ import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 
 import { AuthService } from '../../../../core/services/auth.service';
+import { NavigationService } from '../../../../core/services/navigation.service';
+import { ProfileService } from '../../../../core/services/profile.service';
 
 @Component({
   selector: 'app-register',
@@ -15,16 +17,18 @@ export class RegisterComponent {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly navigationService = inject(NavigationService);
+  private readonly profileService = inject(ProfileService);
 
   readonly loading = signal(false);
   readonly errorMessage = signal('');
   readonly successMessage = signal('');
 
   readonly registerForm = this.fb.group({
-    firstName: ['', [Validators.required]],
-    lastName: ['', [Validators.required]],
+    first_name: ['', [Validators.required]],
+    last_name: ['', [Validators.required]],
     email: ['', [Validators.required, Validators.email]],
-    phone: ['', [Validators.required]],
+    phone: ['', [Validators.pattern(/^[0-9]*$/)]],
     password: ['', [Validators.required, Validators.minLength(8)]],
     confirmPassword: ['', [Validators.required]],
   });
@@ -44,13 +48,28 @@ export class RegisterComponent {
     try {
       this.loading.set(true);
       this.errorMessage.set('');
-
       const { confirmPassword, ...request } = form;
-
       await this.authService.register(request);
-      this.successMessage.set('Cuenta creada correctamente. Ahora puedes iniciar sesión.');
+      this.successMessage.set('Cuenta creada correctamente.');
+      // Si el usuario intentó acceder previamente a una ruta protegida,
+      // volver a esa ubicación una vez autenticado.
+      const returnUrl = this.navigationService.returnUrl();
 
-      await this.router.navigate(['/login']);
+      if (returnUrl) {
+        // La ruta ya fue utilizada, por lo que se elimina para evitar
+        // reutilizarla en futuros registros o inicios de sesión.
+        this.navigationService.clearReturnUrl();
+        await this.router.navigateByUrl(returnUrl);
+        return;
+      }
+
+      const profile = await this.profileService.getProfile();
+
+      if (profile.role === 'CUSTOMER') {
+        await this.router.navigate(['/profile']);
+      } else {
+        await this.router.navigate(['/admin']);
+      }
     } catch (error: any) {
       if (error.message?.toLowerCase().includes('already')) {
         this.errorMessage.set('Ya existe una cuenta con este correo.');

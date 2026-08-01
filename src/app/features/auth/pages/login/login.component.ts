@@ -5,6 +5,7 @@ import { ProfileComponent } from '../../../profile/pages/profile/profile.compone
 
 import { AuthService } from '../../../../core/services/auth.service';
 import { ProfileService } from '../../../../core/services/profile.service';
+import { NavigationService } from '../../../../core/services/navigation.service';
 
 @Component({
   selector: 'app-login',
@@ -19,6 +20,8 @@ export class LoginComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly profileService = inject(ProfileService);
+  private readonly navigationService = inject(NavigationService);
+
   // Estado UI
   readonly loading = signal(false);
   readonly errorMessage = signal('');
@@ -39,6 +42,16 @@ export class LoginComponent {
       const credentials = this.loginForm.getRawValue();
       // Llamar a AuthService
       await this.authService.login(credentials);
+      // Si el usuario intentó acceder previamente a una ruta protegida, volver a esa ubicación una vez autenticado.
+      const returnUrl = this.navigationService.returnUrl();
+
+      if (returnUrl) {
+        // La ruta ya fue utilizada, por lo que se elimina para evitar reutilizarla en futuros inicios de sesión.
+        this.navigationService.clearReturnUrl();
+        await this.router.navigateByUrl(returnUrl);
+
+        return;
+      }
       // Navegar
       const profile = await this.profileService.getProfile();
       if (profile.role === 'CUSTOMER') {

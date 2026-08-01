@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProfileService } from '../../../../core/services/profile.service';
 import { Profile } from '../../../../core/types/profile.types';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'profile',
@@ -12,6 +13,7 @@ import { Profile } from '../../../../core/types/profile.types';
 export class ProfileComponent implements OnInit {
   private readonly profileService = inject(ProfileService);
   private readonly fb = inject(NonNullableFormBuilder);
+  private readonly notificationService = inject(NotificationService);
 
   readonly profile = signal<Profile | null>(null);
   readonly loading = signal(false);
@@ -30,7 +32,6 @@ export class ProfileComponent implements OnInit {
     try {
       await this.loadProfile();
     } catch (error) {
-      console.error('Error al cargar el perfil:', error);
       this.errorMessage.set('No fue posible cargar el perfil.');
     } finally {
       this.loading.set(false);
@@ -45,12 +46,9 @@ export class ProfileComponent implements OnInit {
       await this.profileService.updateProfile(this.profileForm.getRawValue());
       await this.loadProfile();
       this.editing.set(false);
-      // TODO: Mostrar notificación de éxito.
-      alert('Perfil actualizado correctamente.');
+      this.notificationService.success('Perfil actualizado correctamente.');
     } catch (error) {
-      console.error(error);
-      // TODO: Mostrar notificación de error.
-      alert('No fue posible actualizar el perfil.');
+      this.notificationService.error('No fue posible actualizar el perfil.');
     }
   }
   private async loadProfile(): Promise<void> {
