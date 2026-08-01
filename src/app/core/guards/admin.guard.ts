@@ -2,9 +2,11 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 
 import { ProfileService } from '../services/profile.service';
+import { NotificationService } from '../services/notification.service';
 
 export const adminGuard: CanActivateFn = async () => {
   const profileService = inject(ProfileService);
+  const notificationService = inject(NotificationService);
   const router = inject(Router);
 
   try {
@@ -14,8 +16,12 @@ export const adminGuard: CanActivateFn = async () => {
       return true;
     }
 
+    notificationService.error('❌ No tienes permisos para acceder a esta sección.');
+
     return router.createUrlTree(['/profile']);
   } catch {
+    notificationService.info('Debes iniciar sesión para acceder a esta sección.');
+
     return router.createUrlTree(['/login']);
   }
 };

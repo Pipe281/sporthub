@@ -2,6 +2,7 @@ import { computed, Injectable, signal } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 import { LoginRequest, RegisterRequest } from '../types/auth.types';
 import { Session, SupabaseClient, User } from '@supabase/supabase-js';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -46,8 +47,8 @@ export class AuthService {
       password: request.password,
       options: {
         data: {
-          first_name: request.firstName,
-          last_name: request.lastName,
+          first_name: request.first_name,
+          last_name: request.last_name,
           phone: request.phone,
         },
       },
@@ -58,6 +59,7 @@ export class AuthService {
     if (error) {
       throw error;
     }
+    await this.getCurrentUser();
   }
 
   async logout(): Promise<void> {
@@ -100,5 +102,24 @@ export class AuthService {
     console.log('Session:', session);
     await this.getCurrentUser();
     console.log('Usuario autenticado:', this.currentUser());
+  }
+
+  async requestPasswordReset(email: string): Promise<void> {
+    const { error } = await this.client.auth.resetPasswordForEmail(email, {
+      redirectTo: `${environment.appUrl}/reset-password`,
+    });
+
+    if (error) {
+      throw error;
+    }
+  }
+  async updatePassword(password: string): Promise<void> {
+    const { error } = await this.client.auth.updateUser({
+      password,
+    });
+
+    if (error) {
+      throw error;
+    }
   }
 }
