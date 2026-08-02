@@ -1,16 +1,16 @@
 import { Component, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { ProfileComponent } from '../../../profile/pages/profile/profile.component';
 
 import { AuthService } from '../../../../core/services/auth.service';
 import { ProfileService } from '../../../../core/services/profile.service';
 import { NavigationService } from '../../../../core/services/navigation.service';
-
+import { AuthLayoutComponent } from '../../../../shared/ui/auth-layout/auth-layout.component';
+import { ButtonComponent } from '../../../../shared/ui/botton/button.component';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, AuthLayoutComponent, ButtonComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })

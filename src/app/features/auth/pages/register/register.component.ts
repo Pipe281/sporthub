@@ -1,15 +1,17 @@
 import { Component, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 import { AuthService } from '../../../../core/services/auth.service';
 import { NavigationService } from '../../../../core/services/navigation.service';
 import { ProfileService } from '../../../../core/services/profile.service';
+import { ButtonComponent } from '../../../../shared/ui/botton/button.component';
+import { AuthLayoutComponent } from '../../../../shared/ui/auth-layout/auth-layout.component';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, ButtonComponent, RouterLink, AuthLayoutComponent],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',
 })

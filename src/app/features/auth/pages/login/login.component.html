@@ -1,25 +1,64 @@
-<form [formGroup]="loginForm" (ngSubmit)="login()">
-  <label for="email">Correo electrónico</label>
-  <input id="email" type="email" formControlName="email" />
+<app-auth-layout
+  title="Iniciar sesión"
+  subtitle="Bienvenido nuevamente"
+  image="/images/login.jpg"
+  heroTitle="Tu próximo entrenamiento comienza"
+  heroHighlight="aquí."
+  heroDescription="Descubre instalaciones deportivas, reserva en segundos y disfruta una experiencia moderna."
+>
+  <form [formGroup]="loginForm" (ngSubmit)="login()" class="space-y-6">
+    <!-- Correo -->
+    <div>
+      <label for="email" class="mb-2 block text-sm font-medium text-zinc-300">
+        Correo electrónico
+      </label>
 
-  <label for="password">Contraseña</label>
-  <input id="password" type="password" formControlName="password" />
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        placeholder="correo@ejemplo.com"
+        class="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white placeholder:text-zinc-500 transition-all duration-300 focus:border-[#9FEA00] focus:outline-none focus:ring-2 focus:ring-[#9FEA00]/20"
+      />
+    </div>
 
-  <button type="submit" [disabled]="loading()">
-    @if (loading()) {
-      Iniciando sesión...
-    } @else {
-      Iniciar sesión
+    <!-- Contraseña -->
+    <div>
+      <label for="password" class="mb-2 block text-sm font-medium text-zinc-300">
+        Contraseña
+      </label>
+
+      <input
+        id="password"
+        type="password"
+        formControlName="password"
+        placeholder="••••••••"
+        class="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white placeholder:text-zinc-500 transition-all duration-300 focus:border-[#9FEA00] focus:outline-none focus:ring-2 focus:ring-[#9FEA00]/20"
+      />
+    </div>
+
+    <div class="text-right">
+      <a routerLink="/forgot-password" class="text-sm text-[#9FEA00] hover:brightness-110">
+        ¿Olvidaste tu contraseña?
+      </a>
+    </div>
+
+    @if (errorMessage()) {
+      <p class="text-center text-sm text-red-400">
+        {{ errorMessage() }}
+      </p>
     }
-  </button>
-  <a routerLink="/forgot-password"> ¿Olvidaste tu contraseña? </a>
-  @if (errorMessage()) {
-    <p class="error-message">
-      {{ errorMessage() }}
-    </p>
-  }
-</form>
-<p>
-  ¿No tienes una cuenta?
-  <a routerLink="/register">Regístrate</a>
-</p>
+
+    <app-button [type]="'submit'" [loading]="loading()" [fullWidth]="true">
+      Iniciar sesión
+    </app-button>
+  </form>
+
+  <p class="mt-8 text-center text-sm text-zinc-400">
+    ¿No tienes una cuenta?
+
+    <a routerLink="/register" class="font-semibold text-[#9FEA00] hover:brightness-110">
+      Regístrate
+    </a>
+  </p>
+</app-auth-layout>

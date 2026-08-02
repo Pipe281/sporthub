@@ -1,37 +1,127 @@
-<form [formGroup]="registerForm" (ngSubmit)="register()">
-  <label>Nombre</label>
-  <input type="text" formControlName="first_name" />
+<app-auth-layout
+  title="Crear cuenta"
+  subtitle="Únete a SportHub"
+  image="/images/register.png"
+  heroTitle="Comienza tu experiencia deportiva"
+  heroHighlight="hoy."
+  heroDescription="Crea una cuenta gratuita, encuentra instalaciones deportivas y reserva en segundos."
+  [showBenefits]="false"
+  [reverse]="true"
+  [fullHeight]="false"
+>
+  <form [formGroup]="registerForm" (ngSubmit)="register()" class="space-y-3">
+    <div class="grid gap-4 md:grid-cols-2">
+      <!-- Nombre -->
+      <div>
+        <label for="first_name" class="mb-2 block text-sm font-medium text-zinc-300">
+          Nombre
+        </label>
 
-  <label>Apellido</label>
-  <input type="text" formControlName="last_name" />
+        <input
+          id="first_name"
+          type="text"
+          formControlName="first_name"
+          placeholder="Nombre"
+          class="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-white placeholder:text-zinc-500 transition-all duration-300 focus:border-[#9FEA00] focus:outline-none focus:ring-2 focus:ring-[#9FEA00]/20"
+        />
+      </div>
 
-  <label>Correo</label>
-  <input type="email" formControlName="email" />
+      <!-- Apellido -->
+      <div>
+        <label for="last_name" class="mb-2 block text-sm font-medium text-zinc-300">
+          Apellido
+        </label>
 
-  <label>Teléfono</label>
-  <input type="text" formControlName="phone" />
+        <input
+          id="last_name"
+          type="text"
+          formControlName="last_name"
+          placeholder="Apellido"
+          class="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-white placeholder:text-zinc-500 transition-all duration-300 focus:border-[#9FEA00] focus:outline-none focus:ring-2 focus:ring-[#9FEA00]/20"
+        />
+      </div>
+    </div>
 
-  <label>Contraseña</label>
-  <input type="password" formControlName="password" />
+    <!-- Correo -->
+    <div>
+      <label for="email" class="mb-2 block text-sm font-medium text-zinc-300">
+        Correo electrónico
+      </label>
 
-  <label>Confirmar contraseña</label>
-  <input type="password" formControlName="confirmPassword" />
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        placeholder="correo@ejemplo.com"
+        class="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-white placeholder:text-zinc-500 transition-all duration-300 focus:border-[#9FEA00] focus:outline-none focus:ring-2 focus:ring-[#9FEA00]/20"
+      />
+    </div>
 
-  <button type="submit" [disabled]="loading()">
-    @if (loading()) {
-      Creando cuenta...
-    } @else {
-      Crear cuenta
+    <!-- Teléfono -->
+    <div>
+      <label for="phone" class="mb-2 block text-sm font-medium text-zinc-300"> Teléfono </label>
+
+      <input
+        id="phone"
+        type="text"
+        formControlName="phone"
+        placeholder="+56 9 1234 5678"
+        class="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-white placeholder:text-zinc-500 transition-all duration-300 focus:border-[#9FEA00] focus:outline-none focus:ring-2 focus:ring-[#9FEA00]/20"
+      />
+    </div>
+
+    <!-- Contraseña -->
+    <div>
+      <label for="password" class="mb-2 block text-sm font-medium text-zinc-300">
+        Contraseña
+      </label>
+
+      <input
+        id="password"
+        type="password"
+        formControlName="password"
+        placeholder="••••••••"
+        class="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-white placeholder:text-zinc-500 transition-all duration-300 focus:border-[#9FEA00] focus:outline-none focus:ring-2 focus:ring-[#9FEA00]/20"
+      />
+    </div>
+
+    <!-- Confirmar contraseña -->
+    <div>
+      <label for="confirmPassword" class="mb-2 block text-sm font-medium text-zinc-300">
+        Confirmar contraseña
+      </label>
+
+      <input
+        id="confirmPassword"
+        type="password"
+        formControlName="confirmPassword"
+        placeholder="••••••••"
+        class="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-white placeholder:text-zinc-500 transition-all duration-300 focus:border-[#9FEA00] focus:outline-none focus:ring-2 focus:ring-[#9FEA00]/20"
+      />
+    </div>
+
+    @if (successMessage()) {
+      <p class="text-center text-sm text-green-400">
+        {{ successMessage() }}
+      </p>
     }
-  </button>
-  @if (successMessage()) {
-    <p class="success-message">
-      {{ successMessage() }}
-    </p>
-  }
-  @if (errorMessage()) {
-    <p class="error-message">
-      {{ errorMessage() }}
-    </p>
-  }
-</form>
+
+    @if (errorMessage()) {
+      <p class="text-center text-sm text-red-400">
+        {{ errorMessage() }}
+      </p>
+    }
+
+    <app-button [type]="'submit'" [loading]="loading()" [fullWidth]="true">
+      Crear cuenta
+    </app-button>
+  </form>
+
+  <p class="mt-8 text-center text-sm text-zinc-400">
+    ¿Ya tienes una cuenta?
+
+    <a routerLink="/login" class="font-semibold text-[#9FEA00] hover:brightness-110">
+      Inicia sesión
+    </a>
+  </p>
+</app-auth-layout>
