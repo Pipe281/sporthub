@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, computed } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
@@ -9,16 +9,26 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class AuthLayoutComponent {
   readonly title = input.required<string>();
-
   readonly subtitle = input<string>('');
   readonly heroTitle = input.required<string>();
-
   readonly heroDescription = input.required<string>();
   readonly fullHeight = input(true);
   readonly image = input.required<string>();
   readonly heroHighlight = input('');
   readonly showBenefits = input(true);
   readonly reverse = input(false);
+  readonly dividerPosition = computed(() => (this.reverse() ? 'ml-auto' : ''));
+  readonly descriptionPosition = computed(() => (this.reverse() ? 'ml-auto' : ''));
+  readonly heroPosition = computed(() =>
+    this.reverse() ? 'right-24 text-right' : 'left-24 text-left',
+  );
+  readonly heroGradient = computed(() =>
+    this.reverse()
+      ? 'bg-gradient-to-l from-zinc-950 via-black/40 to-black/10'
+      : 'bg-gradient-to-r from-zinc-950 via-black/40 to-black/10',
+  );
+
+  readonly benefitsPosition = computed(() => (this.reverse() ? 'justify-end' : 'justify-start'));
   readonly benefits = [
     {
       icon: 'calendar_month',

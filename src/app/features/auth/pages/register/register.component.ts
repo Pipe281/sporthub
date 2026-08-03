@@ -7,11 +7,18 @@ import { NavigationService } from '../../../../core/services/navigation.service'
 import { ProfileService } from '../../../../core/services/profile.service';
 import { ButtonComponent } from '../../../../shared/ui/botton/button.component';
 import { AuthLayoutComponent } from '../../../../shared/ui/auth-layout/auth-layout.component';
+import { TextInputComponent } from '../../../../shared/ui/text-input/text-input.component';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, ButtonComponent, RouterLink, AuthLayoutComponent],
+  imports: [
+    ReactiveFormsModule,
+    ButtonComponent,
+    RouterLink,
+    AuthLayoutComponent,
+    TextInputComponent,
+  ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',
 })
@@ -37,6 +44,7 @@ export class RegisterComponent {
 
   async register(): Promise<void> {
     if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
       return;
     }
 

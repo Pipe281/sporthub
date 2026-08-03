@@ -8,34 +8,26 @@
 >
   <form [formGroup]="loginForm" (ngSubmit)="login()" class="space-y-6">
     <!-- Correo -->
-    <div>
-      <label for="email" class="mb-2 block text-sm font-medium text-zinc-300">
-        Correo electrónico
-      </label>
 
-      <input
-        id="email"
-        type="email"
-        formControlName="email"
-        placeholder="correo@ejemplo.com"
-        class="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white placeholder:text-zinc-500 transition-all duration-300 focus:border-[#9FEA00] focus:outline-none focus:ring-2 focus:ring-[#9FEA00]/20"
-      />
-    </div>
+    <app-text-input
+      inputId="email"
+      label="Correo electrónico"
+      placeholder="correo@ejemplo.com"
+      type="email"
+      [control]="loginForm.controls.email"
+    >
+    </app-text-input>
 
     <!-- Contraseña -->
-    <div>
-      <label for="password" class="mb-2 block text-sm font-medium text-zinc-300">
-        Contraseña
-      </label>
 
-      <input
-        id="password"
-        type="password"
-        formControlName="password"
-        placeholder="••••••••"
-        class="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-white placeholder:text-zinc-500 transition-all duration-300 focus:border-[#9FEA00] focus:outline-none focus:ring-2 focus:ring-[#9FEA00]/20"
-      />
-    </div>
+    <app-text-input
+      inputId="password"
+      label="Contraseña"
+      type="password"
+      placeholder="••••••••"
+      [control]="loginForm.controls.password"
+    >
+    </app-text-input>
 
     <div class="text-right">
       <a routerLink="/forgot-password" class="text-sm text-[#9FEA00] hover:brightness-110">

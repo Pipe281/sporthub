@@ -9,112 +9,83 @@
   [reverse]="true"
   [fullHeight]="false"
 >
-  <form [formGroup]="registerForm" (ngSubmit)="register()" class="space-y-3">
+  <form [formGroup]="registerForm" (ngSubmit)="register()" class="space-y-4">
+    <!-- Nombre y Apellido -->
     <div class="grid gap-4 md:grid-cols-2">
-      <!-- Nombre -->
-      <div>
-        <label for="first_name" class="mb-2 block text-sm font-medium text-zinc-300">
-          Nombre
-        </label>
+      <app-text-input
+        inputId="first_name"
+        label="Nombre"
+        placeholder="Nombre"
+        [control]="registerForm.controls.first_name"
+      >
+      </app-text-input>
 
-        <input
-          id="first_name"
-          type="text"
-          formControlName="first_name"
-          placeholder="Nombre"
-          class="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-white placeholder:text-zinc-500 transition-all duration-300 focus:border-[#9FEA00] focus:outline-none focus:ring-2 focus:ring-[#9FEA00]/20"
-        />
-      </div>
-
-      <!-- Apellido -->
-      <div>
-        <label for="last_name" class="mb-2 block text-sm font-medium text-zinc-300">
-          Apellido
-        </label>
-
-        <input
-          id="last_name"
-          type="text"
-          formControlName="last_name"
-          placeholder="Apellido"
-          class="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-white placeholder:text-zinc-500 transition-all duration-300 focus:border-[#9FEA00] focus:outline-none focus:ring-2 focus:ring-[#9FEA00]/20"
-        />
-      </div>
+      <app-text-input
+        inputId="last_name"
+        label="Apellido"
+        placeholder="Apellido"
+        [control]="registerForm.controls.last_name"
+      >
+      </app-text-input>
     </div>
 
     <!-- Correo -->
-    <div>
-      <label for="email" class="mb-2 block text-sm font-medium text-zinc-300">
-        Correo electrónico
-      </label>
-
-      <input
-        id="email"
-        type="email"
-        formControlName="email"
-        placeholder="correo@ejemplo.com"
-        class="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-white placeholder:text-zinc-500 transition-all duration-300 focus:border-[#9FEA00] focus:outline-none focus:ring-2 focus:ring-[#9FEA00]/20"
-      />
-    </div>
+    <app-text-input
+      inputId="email"
+      label="Correo electrónico"
+      type="email"
+      placeholder="correo@ejemplo.com"
+      [control]="registerForm.controls.email"
+    >
+    </app-text-input>
 
     <!-- Teléfono -->
-    <div>
-      <label for="phone" class="mb-2 block text-sm font-medium text-zinc-300"> Teléfono </label>
-
-      <input
-        id="phone"
-        type="text"
-        formControlName="phone"
-        placeholder="+56 9 1234 5678"
-        class="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-white placeholder:text-zinc-500 transition-all duration-300 focus:border-[#9FEA00] focus:outline-none focus:ring-2 focus:ring-[#9FEA00]/20"
-      />
-    </div>
+    <app-text-input
+      inputId="phone"
+      label="Teléfono"
+      type="tel"
+      placeholder="+56 9 1234 5678"
+      [control]="registerForm.controls.phone"
+    >
+    </app-text-input>
 
     <!-- Contraseña -->
-    <div>
-      <label for="password" class="mb-2 block text-sm font-medium text-zinc-300">
-        Contraseña
-      </label>
-
-      <input
-        id="password"
-        type="password"
-        formControlName="password"
-        placeholder="••••••••"
-        class="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-white placeholder:text-zinc-500 transition-all duration-300 focus:border-[#9FEA00] focus:outline-none focus:ring-2 focus:ring-[#9FEA00]/20"
-      />
-    </div>
+    <app-text-input
+      inputId="password"
+      label="Contraseña"
+      type="password"
+      placeholder="••••••••"
+      [control]="registerForm.controls.password"
+    >
+    </app-text-input>
 
     <!-- Confirmar contraseña -->
-    <div>
-      <label for="confirmPassword" class="mb-2 block text-sm font-medium text-zinc-300">
-        Confirmar contraseña
-      </label>
+    <app-text-input
+      inputId="confirmPassword"
+      label="Confirmar contraseña"
+      type="password"
+      placeholder="••••••••"
+      [control]="registerForm.controls.confirmPassword"
+    >
+    </app-text-input>
 
-      <input
-        id="confirmPassword"
-        type="password"
-        formControlName="confirmPassword"
-        placeholder="••••••••"
-        class="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-white placeholder:text-zinc-500 transition-all duration-300 focus:border-[#9FEA00] focus:outline-none focus:ring-2 focus:ring-[#9FEA00]/20"
-      />
+    <div class="pt-4">
+      @if (successMessage()) {
+        <p class="mb-3 text-center text-sm text-green-400">
+          {{ successMessage() }}
+        </p>
+      }
+
+      @if (errorMessage()) {
+        <p class="mb-3 text-center text-sm text-red-400">
+          {{ errorMessage() }}
+        </p>
+      }
+
+      <app-button [type]="'submit'" [loading]="loading()" [fullWidth]="true">
+        Crear cuenta
+      </app-button>
     </div>
-
-    @if (successMessage()) {
-      <p class="text-center text-sm text-green-400">
-        {{ successMessage() }}
-      </p>
-    }
-
-    @if (errorMessage()) {
-      <p class="text-center text-sm text-red-400">
-        {{ errorMessage() }}
-      </p>
-    }
-
-    <app-button [type]="'submit'" [loading]="loading()" [fullWidth]="true">
-      Crear cuenta
-    </app-button>
   </form>
 
   <p class="mt-8 text-center text-sm text-zinc-400">

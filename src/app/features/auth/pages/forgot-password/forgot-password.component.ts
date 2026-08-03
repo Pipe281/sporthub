@@ -4,10 +4,20 @@ import { RouterLink } from '@angular/router';
 
 import { AuthService } from '../../../../core/services/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { TextInputComponent } from '../../../../shared/ui/text-input/text-input.component';
+import { AuthLayoutComponent } from '../../../../shared/ui/auth-layout/auth-layout.component';
+import { ButtonComponent } from '../../../../shared/ui/botton/button.component';
+
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [
+    ReactiveFormsModule,
+    TextInputComponent,
+    AuthLayoutComponent,
+    ButtonComponent,
+    RouterLink,
+  ],
   templateUrl: './forgot-password.component.html',
   styleUrl: './forgot-password.component.scss',
 })
@@ -24,6 +34,7 @@ export class ForgotPasswordComponent {
 
   async sendRecoveryEmail(): Promise<void> {
     if (this.forgotPasswordForm.invalid) {
+      this.forgotPasswordForm.markAllAsTouched();
       return;
     }
 

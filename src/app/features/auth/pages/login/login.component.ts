@@ -7,10 +7,18 @@ import { ProfileService } from '../../../../core/services/profile.service';
 import { NavigationService } from '../../../../core/services/navigation.service';
 import { AuthLayoutComponent } from '../../../../shared/ui/auth-layout/auth-layout.component';
 import { ButtonComponent } from '../../../../shared/ui/botton/button.component';
+import { TextInputComponent } from '../../../../shared/ui/text-input/text-input.component';
+
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, AuthLayoutComponent, ButtonComponent],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    AuthLayoutComponent,
+    ButtonComponent,
+    TextInputComponent,
+  ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
@@ -33,6 +41,7 @@ export class LoginComponent {
 
   async login(): Promise<void> {
     if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
       return;
     }
     try {

@@ -43,17 +43,12 @@
     <!-- Imagen -->
     <img [src]="image()" alt="SportHub" class="h-full w-full object-cover" />
 
-    <!-- Overlay -->
-    <div class="absolute inset-0 bg-black/65"></div>
-
     <!-- Gradiente -->
-    <div
-      class="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/60 to-transparent"
-    ></div>
+    <div class="absolute inset-0" [class]="heroGradient()"></div>
 
-    <!-- Texto -->
+    <!-- Hero -->
     <div class="absolute inset-0">
-      <div class="absolute left-24 bottom-24 max-w-[560px]">
+      <div class="absolute bottom-24 max-w-[560px]" [class]="heroPosition()">
         <!-- Badge -->
         <span
           class="inline-flex rounded-full border border-[#9FEA00]/30 bg-[#9FEA00]/10 px-5 py-2 text-sm font-semibold text-[#9FEA00] backdrop-blur"
@@ -73,18 +68,18 @@
         </h2>
 
         <!-- Línea -->
-        <div class="mt-8 h-1 w-24 rounded-full bg-[#9FEA00]"></div>
+        <div class="mt-8 h-1 w-24 rounded-full bg-[#9FEA00]" [class]="dividerPosition()"></div>
 
         <!-- Descripción -->
-        <p class="mt-8 max-w-xl text-lg leading-9 text-zinc-300">
+        <p class="mt-8 max-w-xl text-lg leading-9 text-zinc-300" [class]="descriptionPosition()">
           {{ heroDescription() }}
         </p>
 
         @if (showBenefits()) {
-          <div class="mt-16 flex gap-10">
+          <div class="mt-16 flex gap-10" [class]="benefitsPosition()">
             @for (benefit of benefits; track benefit.title) {
               <div class="flex items-start gap-4">
-                <mat-icon class="!h-10 !w-10 !text-[38px] text-[#9FEA00] flex-shrink-0">
+                <mat-icon class="!h-10 !w-10 !text-[38px] flex-shrink-0 text-[#9FEA00]">
                   {{ benefit.icon }}
                 </mat-icon>
 

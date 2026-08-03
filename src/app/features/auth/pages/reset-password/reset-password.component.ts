@@ -1,13 +1,22 @@
 import { Component, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { TextInputComponent } from '../../../../shared/ui/text-input/text-input.component';
+import { AuthLayoutComponent } from '../../../../shared/ui/auth-layout/auth-layout.component';
+import { ButtonComponent } from '../../../../shared/ui/botton/button.component';
 
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [
+    ReactiveFormsModule,
+    AuthLayoutComponent,
+    ButtonComponent,
+    TextInputComponent,
+    RouterLink,
+  ],
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.scss',
 })
@@ -26,6 +35,7 @@ export class ResetPasswordComponent {
 
   async resetPassword(): Promise<void> {
     if (this.resetPasswordForm.invalid) {
+      this.resetPasswordForm.markAllAsTouched();
       return;
     }
 
