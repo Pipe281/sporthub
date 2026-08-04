@@ -1,12 +1,16 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ProfileService } from '../../../../core/services/profile.service';
-import { Profile } from '../../../../core/types/profile.types';
+
 import { NotificationService } from '../../../../core/services/notification.service';
+import { ProfileService } from '../../../../core/services/profile.service';
+import { TextInputComponent } from '../../../../shared/ui/text-input/text-input.component';
+import { AuthService } from '../../../../core/services/auth.service';
+import { ButtonComponent } from '../../../../shared/ui/botton/button.component';
 
 @Component({
   selector: 'profile',
-  imports: [ReactiveFormsModule],
+  standalone: true,
+  imports: [ReactiveFormsModule, TextInputComponent, ButtonComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
 })
@@ -14,8 +18,13 @@ export class ProfileComponent implements OnInit {
   private readonly profileService = inject(ProfileService);
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly notificationService = inject(NotificationService);
+  private readonly authService = inject(AuthService);
 
-  readonly profile = signal<Profile | null>(null);
+  readonly currentUser = this.authService.currentUser;
+  // Estado compartido
+  readonly profile = this.profileService.profile;
+
+  // Estado de la vista
   readonly loading = signal(false);
   readonly errorMessage = signal('');
   readonly editing = signal(false);
@@ -31,12 +40,13 @@ export class ProfileComponent implements OnInit {
 
     try {
       await this.loadProfile();
-    } catch (error) {
+    } catch {
       this.errorMessage.set('No fue posible cargar el perfil.');
     } finally {
       this.loading.set(false);
     }
   }
+
   async saveProfile(): Promise<void> {
     if (this.profileForm.invalid) {
       return;
@@ -44,17 +54,32 @@ export class ProfileComponent implements OnInit {
 
     try {
       await this.profileService.updateProfile(this.profileForm.getRawValue());
-      await this.loadProfile();
+
+      // updateProfile() ya actualiza el signal
+      this.patchForm();
+
       this.editing.set(false);
+
       this.notificationService.success('Perfil actualizado correctamente.');
-    } catch (error) {
+    } catch {
       this.notificationService.error('No fue posible actualizar el perfil.');
     }
   }
-  private async loadProfile(): Promise<void> {
-    const profile = await this.profileService.getProfile();
 
-    this.profile.set(profile);
+  private async loadProfile(): Promise<void> {
+    await this.profileService.loadProfile();
+    console.log('aqui viene el profile');
+    console.log(this.profile());
+
+    this.patchForm();
+  }
+
+  private patchForm(): void {
+    const profile = this.profile();
+
+    if (!profile) {
+      return;
+    }
 
     this.profileForm.patchValue({
       first_name: profile.first_name,
@@ -70,14 +95,6 @@ export class ProfileComponent implements OnInit {
   cancelEditing(): void {
     this.editing.set(false);
 
-    const profile = this.profile();
-
-    if (!profile) return;
-
-    this.profileForm.patchValue({
-      first_name: profile.first_name,
-      last_name: profile.last_name,
-      phone: profile.phone ?? '',
-    });
+    this.patchForm();
   }
 }
