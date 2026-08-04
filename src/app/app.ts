@@ -3,7 +3,7 @@ import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 
 import { AuthService } from './core/services/auth.service';
-import { HeaderComponent } from './shared/components/header/header.component';
+import { HeaderComponent } from './shared/ui/header/header.component';
 import { NavigationService } from './core/services/navigation.service';
 import { PUBLIC_AUTH_ROUTES } from './core/constants/app-routes.constants';
 
