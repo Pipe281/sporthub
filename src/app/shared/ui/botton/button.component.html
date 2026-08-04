@@ -1,4 +1,9 @@
-<button [type]="type()" [disabled]="disabled() || loading()" [class]="classes()">
+<button
+  [type]="type()"
+  [disabled]="disabled() || loading()"
+  [class]="classes()"
+  (click)="clicked.emit()"
+>
   @if (loading()) {
     <span class="flex items-center justify-center gap-3">
       <svg
