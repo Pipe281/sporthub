@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 
 @Component({
   selector: 'app-button',
@@ -8,11 +8,13 @@ import { Component, computed, input } from '@angular/core';
   styleUrl: './button.component.scss',
 })
 export class ButtonComponent {
-  readonly type = input<'button' | 'submit'>('button');
+  readonly type = input<'button' | 'submit' | 'reset'>('button');
   readonly disabled = input(false);
   readonly loading = input(false);
   readonly fullWidth = input(false);
   readonly variant = input<'primary' | 'secondary' | 'outline'>('primary');
+
+  readonly clicked = output<void>();
 
   readonly classes = computed(() => {
     const base =
@@ -24,9 +26,10 @@ export class ButtonComponent {
       outline: 'border border-zinc-600 bg-transparent text-white hover:bg-zinc-900',
     };
 
-    const disabled = this.disabled() || this.loading() ? 'opacity-60 cursor-not-allowed' : '';
-    const width = this.fullWidth() ? 'w-full' : '';
+    const isDisabled = this.disabled() || this.loading();
+    const stateClasses = isDisabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer';
+    const widthClass = this.fullWidth() ? 'w-full' : '';
 
-    return `${base} ${variants[this.variant()]} ${disabled} ${width}`;
+    return `${base} ${variants[this.variant()]} ${stateClasses} ${widthClass}`;
   });
 }
