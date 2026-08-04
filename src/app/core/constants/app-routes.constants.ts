@@ -17,8 +17,7 @@ export const ADMIN_ROUTES = {
   FACILITIES: '/admin/facilities',
   FACILITY_TYPES: '/admin/facility-types',
   SCHEDULES: '/admin/schedules',
-  RESERVATIONS: '/admin/reservations',
-  USERS: '/admin/users',
+  CLIENTS: '/admin/clients',
 } as const;
 
 export const APP_ROUTES = {

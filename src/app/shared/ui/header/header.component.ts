@@ -69,29 +69,24 @@ export class HeaderComponent {
       icon: 'dashboard',
     },
     {
+      label: 'Clientes',
+      route: ADMIN_ROUTES.CLIENTS,
+      icon: 'group',
+    },
+    {
       label: 'Instalaciones',
       route: ADMIN_ROUTES.FACILITIES,
       icon: 'fitness_center',
     },
     {
-      label: 'Tipos',
-      route: ADMIN_ROUTES.FACILITY_TYPES,
-      icon: 'category',
-    },
-    {
-      label: 'Horarios',
+      label: 'Calendario',
       route: ADMIN_ROUTES.SCHEDULES,
       icon: 'schedule',
     },
     {
-      label: 'Reservas',
-      route: ADMIN_ROUTES.RESERVATIONS,
-      icon: 'event',
-    },
-    {
-      label: 'Usuarios',
-      route: ADMIN_ROUTES.USERS,
-      icon: 'group',
+      label: 'Tipos',
+      route: ADMIN_ROUTES.FACILITY_TYPES,
+      icon: 'category',
     },
   ];
   readonly navigationItems = computed(() => {
