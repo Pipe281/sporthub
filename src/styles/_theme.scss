@@ -1,0 +1,29 @@
+@use '@angular/material' as mat;
+
+html {
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+}
+
+:root {
+  --color-background: #09090b;
+  --color-surface: #18181b;
+  --color-surface-light: #27272a;
+
+  --color-primary: #a3ff12;
+  --color-primary-hover: #b8ff45;
+
+  --color-text: #ffffff;
+  --color-text-secondary: #a1a1aa;
+
+  --color-success: #22c55e;
+  --color-danger: #ef4444;
+}

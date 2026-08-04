@@ -1,3 +1,48 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './core/guards/auth.guard';
+import { guestGuard } from './core/guards/guest.guard';
 
-export const routes: Routes = [];
+import { LoginComponent } from './features/auth/pages/login/login.component';
+import { RegisterComponent } from './features/auth/pages/register/register.component';
+import { ProfileComponent } from './features/profile/pages/profile/profile.component';
+import { adminGuard } from './core/guards/admin.guard';
+import { AdminComponent } from './features/admin/pages/admin/admin.component';
+import { ForgotPasswordComponent } from './features/auth/pages/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './features/auth/pages/reset-password/reset-password.component';
+
+export const routes: Routes = [
+  {
+    path: 'login',
+    component: LoginComponent,
+    canActivate: [guestGuard],
+  },
+  {
+    path: '',
+    redirectTo: 'login',
+    pathMatch: 'full',
+  },
+  {
+    path: 'register',
+    component: RegisterComponent,
+    canActivate: [guestGuard],
+  },
+  {
+    path: 'profile',
+    component: ProfileComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'admin',
+    component: AdminComponent,
+    canActivate: [authGuard, adminGuard],
+  },
+  {
+    path: 'forgot-password',
+    component: ForgotPasswordComponent,
+    canActivate: [guestGuard],
+  },
+  {
+    path: 'reset-password',
+    component: ResetPasswordComponent,
+  },
+];

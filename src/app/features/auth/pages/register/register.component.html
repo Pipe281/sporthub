@@ -1,0 +1,98 @@
+<app-auth-layout
+  title="Crear cuenta"
+  subtitle="Únete a SportHub"
+  image="/images/register.png"
+  heroTitle="Comienza tu experiencia deportiva"
+  heroHighlight="hoy."
+  heroDescription="Crea una cuenta gratuita, encuentra instalaciones deportivas y reserva en segundos."
+  [showBenefits]="false"
+  [reverse]="true"
+  [fullHeight]="false"
+>
+  <form [formGroup]="registerForm" (ngSubmit)="register()" class="space-y-4">
+    <!-- Nombre y Apellido -->
+    <div class="grid gap-4 md:grid-cols-2">
+      <app-text-input
+        inputId="first_name"
+        label="Nombre"
+        placeholder="Nombre"
+        [control]="registerForm.controls.first_name"
+      >
+      </app-text-input>
+
+      <app-text-input
+        inputId="last_name"
+        label="Apellido"
+        placeholder="Apellido"
+        [control]="registerForm.controls.last_name"
+      >
+      </app-text-input>
+    </div>
+
+    <!-- Correo -->
+    <app-text-input
+      inputId="email"
+      label="Correo electrónico"
+      type="email"
+      placeholder="correo@ejemplo.com"
+      [control]="registerForm.controls.email"
+    >
+    </app-text-input>
+
+    <!-- Teléfono -->
+    <app-text-input
+      inputId="phone"
+      label="Teléfono"
+      type="tel"
+      placeholder="+56 9 1234 5678"
+      [control]="registerForm.controls.phone"
+    >
+    </app-text-input>
+
+    <!-- Contraseña -->
+    <app-text-input
+      inputId="password"
+      label="Contraseña"
+      type="password"
+      placeholder="••••••••"
+      [control]="registerForm.controls.password"
+    >
+    </app-text-input>
+
+    <!-- Confirmar contraseña -->
+    <app-text-input
+      inputId="confirmPassword"
+      label="Confirmar contraseña"
+      type="password"
+      placeholder="••••••••"
+      [control]="registerForm.controls.confirmPassword"
+    >
+    </app-text-input>
+
+    <div class="pt-4">
+      @if (successMessage()) {
+        <p class="mb-3 text-center text-sm text-green-400">
+          {{ successMessage() }}
+        </p>
+      }
+
+      @if (errorMessage()) {
+        <p class="mb-3 text-center text-sm text-red-400">
+          {{ errorMessage() }}
+        </p>
+      }
+
+      <app-button [type]="'submit'" [loading]="loading()" [fullWidth]="true">
+        Crear cuenta
+      </app-button>
+    </div>
+  </form>
+
+  <p class="mt-8 text-center text-sm text-zinc-400">
+    ¿Ya tienes una cuenta?
+
+    <a routerLink="/login" class="font-semibold text-[#9FEA00] hover:brightness-110">
+      Inicia sesión
+    </a>
+  </p>
+</app-auth-layout>
