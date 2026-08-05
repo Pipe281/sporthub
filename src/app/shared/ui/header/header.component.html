@@ -1,0 +1,133 @@
+@if (showHeader()) {
+  <header class="border-b border-zinc-800 bg-zinc-900 shadow-lg">
+    @if (menuOpen()) {
+      <div class="fixed inset-0 z-40 bg-black/60 lg:hidden" (click)="closeMenu()"></div>
+    }
+    <div class="mx-auto flex h-18 max-w-7xl items-center px-6">
+      <!-- Logo -->
+      <div class="flex flex-shrink-0 items-center gap-3">
+        <img src="/images/logo_transparente.png" alt="SportHub" class="h-10 w-auto" />
+
+        <span class="text-xl font-bold text-white"> SportHub </span>
+      </div>
+
+      <!-- Navegación escritorio -->
+      <nav class="ml-10 hidden flex-1 items-center justify-center gap-8 lg:flex">
+        @for (item of navigationItems(); track item.route) {
+          <a
+            [routerLink]="item.route"
+            routerLinkActive="text-[#9FEA00]"
+            class="flex items-center gap-2 whitespace-nowrap font-medium text-zinc-300 transition-colors duration-200 hover:text-[#9FEA00]"
+          >
+            <mat-icon>
+              {{ item.icon }}
+            </mat-icon>
+
+            <span>
+              {{ item.label }}
+            </span>
+          </a>
+        }
+      </nav>
+
+      <!-- Zona derecha -->
+      <div class="ml-auto flex flex-shrink-0 items-center gap-4">
+        <div class="hidden text-right xl:block">
+          <p class="text-sm font-semibold text-white">
+            {{ profile()?.first_name }}
+          </p>
+        </div>
+
+        <!-- Solo escritorio -->
+        <button
+          type="button"
+          (click)="logout()"
+          class="hidden rounded-xl border border-zinc-700 px-4 py-2 text-sm text-zinc-300 transition-colors duration-200 hover:border-[#9FEA00] hover:text-[#9FEA00] lg:block"
+        >
+          Cerrar sesión
+        </button>
+
+        <!-- Solo móvil -->
+        <button
+          type="button"
+          (click)="toggleMenu()"
+          class="rounded-xl p-2 text-zinc-300 transition hover:bg-zinc-800 lg:hidden"
+        >
+          <mat-icon>
+            {{ menuOpen() ? 'close' : 'menu' }}
+          </mat-icon>
+        </button>
+      </div>
+    </div>
+  </header>
+  <!-- Dropdown menu móvil -->
+  <div
+    class="fixed left-0 top-0 z-50 flex h-screen w-80 flex-col border-r border-zinc-800 bg-zinc-900 shadow-2xl transition-transform duration-300 lg:hidden"
+    [class.-translate-x-full]="!menuOpen()"
+    [class.translate-x-0]="menuOpen()"
+  >
+    <div class="flex items-center justify-between border-b border-zinc-800 p-6">
+      <!-- Encabezado -->
+      <div class="flex items-center gap-3">
+        <img src="/images/logo_transparente.png" alt="SportHub" class="h-10 w-auto" />
+
+        <span class="text-xl font-bold text-white"> SportHub </span>
+      </div>
+
+      <button
+        type="button"
+        (click)="closeMenu()"
+        class="rounded-lg p-2 text-zinc-300 transition hover:bg-zinc-800"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <!-- Menú -->
+    <nav class="flex-1 px-4 py-6">
+      <div class="space-y-2">
+        @for (item of navigationItems(); track item.route) {
+          <a
+            [routerLink]="item.route"
+            routerLinkActive="bg-zinc-800 text-[#9FEA00]"
+            (click)="closeMenu()"
+            class="flex items-center gap-4 rounded-xl px-4 py-3 text-zinc-300 transition-colors duration-200 hover:bg-zinc-800 hover:text-[#9FEA00]"
+          >
+            <mat-icon>
+              {{ item.icon }}
+            </mat-icon>
+
+            <span>
+              {{ item.label }}
+            </span>
+          </a>
+        }
+      </div>
+    </nav>
+    <div class="border-t border-zinc-800 p-6">
+      <div class="mb-6 flex items-center gap-3">
+        <div
+          class="flex h-12 w-12 items-center justify-center rounded-full bg-[#9FEA00] font-bold text-black"
+        >
+          {{ profile()?.first_name?.charAt(0) }}
+        </div>
+
+        <div>
+          <p class="font-semibold text-white">
+            {{ profile()?.first_name }}
+            {{ profile()?.last_name }}
+          </p>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        (click)="logout()"
+        class="flex w-full items-center justify-center rounded-xl border border-zinc-700 px-4 py-3 text-zinc-300 transition-colors duration-200 hover:border-[#9FEA00] hover:text-[#9FEA00]"
+      >
+        <mat-icon class="mr-2">logout</mat-icon>
+
+        Cerrar sesión
+      </button>
+    </div>
+  </div>
+}

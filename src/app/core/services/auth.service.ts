@@ -1,4 +1,4 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, Injectable, signal, inject } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 import { LoginRequest, RegisterRequest } from '../types/auth.types';
 import { Session, SupabaseClient, User } from '@supabase/supabase-js';
@@ -8,7 +8,7 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private readonly supabaseService: SupabaseService) {}
+  private readonly supabaseService = inject(SupabaseService);
 
   // Estado interno del usuario autenticado.
   // Es privado para que solo AuthService pueda modificarlo.
@@ -68,6 +68,7 @@ export class AuthService {
     if (error) {
       throw error;
     }
+
     this._currentUser.set(null);
   }
 
