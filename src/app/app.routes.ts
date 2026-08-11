@@ -12,6 +12,7 @@ import { ResetPasswordComponent } from './features/auth/pages/reset-password/res
 import { NotFoundComponent } from './features/shared/pages/not-found/not-found.component';
 import { CreateFacilityComponent } from './features/admin/pages/create-facility/create-facility.component';
 import { FacilitiesComponent } from './features/facilities/pages/facilities/facilities.component';
+import { AdminFacilitiesComponent } from './features/admin/pages/admin-facilities.component/admin-facilities.component';
 
 export const routes: Routes = [
   {
@@ -56,6 +57,11 @@ export const routes: Routes = [
   {
     path: 'admin/facilities/create',
     component: CreateFacilityComponent,
+    canActivate: [authGuard, adminGuard],
+  },
+  {
+    path: 'admin/facilities',
+    component: AdminFacilitiesComponent,
     canActivate: [authGuard, adminGuard],
   },
   {
