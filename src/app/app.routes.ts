@@ -11,6 +11,7 @@ import { ForgotPasswordComponent } from './features/auth/pages/forgot-password/f
 import { ResetPasswordComponent } from './features/auth/pages/reset-password/reset-password.component';
 import { NotFoundComponent } from './features/shared/pages/not-found/not-found.component';
 import { CreateFacilityComponent } from './features/admin/pages/create-facility/create-facility.component';
+import { FacilitiesComponent } from './features/facilities/pages/facilities/facilities.component';
 
 export const routes: Routes = [
   {
@@ -46,6 +47,11 @@ export const routes: Routes = [
   {
     path: 'reset-password',
     component: ResetPasswordComponent,
+  },
+  {
+    path: 'facilities',
+    component: FacilitiesComponent,
+    canActivate: [authGuard],
   },
   {
     path: 'admin/facilities/create',

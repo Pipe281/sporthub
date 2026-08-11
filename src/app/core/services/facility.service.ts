@@ -9,6 +9,17 @@ export type FacilityType = Tables<'facility_types'>;
 export type FacilityInsert = TablesInsert<'facilities'>;
 export type FacilityStatus = Facility['status'];
 
+export type FacilityWithType = Facility & {
+  facility_types: {
+    id: string;
+    name: string;
+  } | null;
+};
+export type FacilityGroup = {
+  type: string;
+  facilities: FacilityWithType[];
+};
+
 @Injectable({
   providedIn: 'root',
 })
@@ -17,10 +28,18 @@ export class FacilityService {
 
   private readonly supabase = this.supabaseService.getClient();
 
-  async getFacilities(): Promise<Facility[]> {
+  async getFacilities(): Promise<FacilityWithType[]> {
     const { data, error } = await this.supabase
       .from('facilities')
-      .select('*')
+      .select(
+        `
+      *,
+      facility_types (
+        id,
+        name
+      )
+    `,
+      )
       .eq('status', 'ACTIVE')
       .order('name');
 
