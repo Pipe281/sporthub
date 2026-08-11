@@ -42,13 +42,11 @@
           <select id="facility_type_id" formControlName="facility_type_id" class="select-input">
             <option value="" disabled>Selecciona un tipo</option>
 
-            <option value="padel">Pádel</option>
-
-            <option value="futbol">Fútbol</option>
-
-            <option value="tenis">Tenis</option>
-
-            <option value="multiuso">Sala multiuso</option>
+            @for (type of facilityTypes(); track type.id) {
+              <option [value]="type.id">
+                {{ type.name }}
+              </option>
+            }
           </select>
 
           @if (
@@ -83,9 +81,7 @@
 
           <select id="status" formControlName="status" class="select-input">
             <option value="ACTIVE">Activa</option>
-
             <option value="INACTIVE">Inactiva</option>
-
             <option value="MAINTENANCE">En mantenimiento</option>
           </select>
         </div>
@@ -113,7 +109,12 @@
         >
           <app-button type="button" variant="outline" (clicked)="cancel()"> Cancelar </app-button>
 
-          <app-button type="submit" variant="primary" [disabled]="facilityForm.invalid">
+          <app-button
+            type="submit"
+            variant="primary"
+            [disabled]="facilityForm.invalid"
+            [loading]="isSaving()"
+          >
             Crear instalación
           </app-button>
         </div>
