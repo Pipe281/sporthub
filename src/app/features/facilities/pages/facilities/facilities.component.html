@@ -1,0 +1,97 @@
+<div class="min-h-screen bg-zinc-950 px-4 py-8 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-7xl">
+    <!-- Encabezado -->
+    <div class="mb-10">
+      <h1 class="text-3xl font-bold text-white">Instalaciones deportivas</h1>
+
+      <p class="mt-2 text-zinc-400">Selecciona una instalación para consultar su disponibilidad.</p>
+    </div>
+
+    <!-- Loading -->
+    @if (loading()) {
+      <div class="flex min-h-60 items-center justify-center">
+        <p class="text-zinc-400">Cargando instalaciones...</p>
+      </div>
+    }
+
+    <!-- Error -->
+    @else if (error()) {
+      <div class="rounded-2xl border border-red-900/50 bg-red-950/30 p-6 text-center">
+        <p class="text-red-400">No fue posible cargar las instalaciones.</p>
+      </div>
+    }
+
+    <!-- Instalaciones -->
+    @else {
+      @if (facilities().length === 0) {
+        <div class="rounded-2xl border border-zinc-800 bg-zinc-900 p-8 text-center">
+          <p class="text-zinc-400">No hay instalaciones disponibles actualmente.</p>
+        </div>
+      } @else {
+        @for (group of facilitiesByType(); track group.type) {
+          <!-- Grupo por tipo -->
+          <section class="mb-10">
+            <!-- Nombre del tipo -->
+            <div class="mb-5 flex items-center gap-4">
+              <h2 class="text-2xl font-bold text-white">
+                {{ group.type }}
+              </h2>
+
+              <div class="h-px flex-1 bg-zinc-800"></div>
+            </div>
+
+            <!-- Tarjetas -->
+            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              @for (facility of group.facilities; track facility.id) {
+                <article
+                  class="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 shadow-lg transition duration-300 hover:-translate-y-1 hover:border-[#9FEA00]/50"
+                >
+                  <!-- Imagen -->
+                  @if (facility.image_url) {
+                    <img
+                      [src]="facility.image_url"
+                      [alt]="facility.name"
+                      class="h-48 w-full object-cover"
+                    />
+                  } @else {
+                    <div class="flex h-48 items-center justify-center bg-zinc-800 text-zinc-500">
+                      Sin imagen
+                    </div>
+                  }
+
+                  <!-- Contenido -->
+                  <div class="p-5">
+                    <!-- Nombre + disponibilidad -->
+                    <div class="mb-3 flex items-start justify-between gap-4">
+                      <h3 class="text-xl font-bold text-white">
+                        {{ facility.name }}
+                      </h3>
+
+                      <span
+                        class="shrink-0 rounded-full bg-green-500/10 px-3 py-1 text-xs font-semibold text-green-400"
+                      >
+                        Disponible
+                      </span>
+                    </div>
+
+                    <!-- Capacidad -->
+                    <p class="text-sm text-zinc-400">Capacidad: {{ facility.capacity }} personas</p>
+
+                    <!-- Precio -->
+                    <div class="mt-4 flex items-center justify-between">
+                      <span class="text-sm text-zinc-400"> Precio por hora </span>
+
+                      <span class="text-lg font-bold text-[#9FEA00]">
+                        ${{ facility.price_per_hour }}
+                      </span>
+                    </div>
+                  </div>
+                </article>
+              }
+            </div>
+          </section>
+        }
+      }
+    }
+  </div>
+</div>

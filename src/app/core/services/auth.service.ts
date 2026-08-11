@@ -100,7 +100,6 @@ export class AuthService {
       console.log('No existe sesión.');
       return;
     }
-    console.log('Session:', session);
     await this.getCurrentUser();
     console.log('Usuario autenticado:', this.currentUser());
   }
