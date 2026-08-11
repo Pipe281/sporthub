@@ -88,6 +88,11 @@ export class HeaderComponent {
       route: ADMIN_ROUTES.FACILITY_TYPES,
       icon: 'category',
     },
+    {
+      label: 'Mi perfil',
+      route: ADMIN_ROUTES.PROFILE,
+      icon: 'person',
+    },
   ];
   readonly navigationItems = computed(() => {
     const profile = this.profile();

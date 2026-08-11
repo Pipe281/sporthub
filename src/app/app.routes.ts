@@ -10,6 +10,7 @@ import { AdminComponent } from './features/admin/pages/admin/admin.component';
 import { ForgotPasswordComponent } from './features/auth/pages/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './features/auth/pages/reset-password/reset-password.component';
 import { NotFoundComponent } from './features/shared/pages/not-found/not-found.component';
+import { CreateFacilityComponent } from './features/admin/pages/create-facility/create-facility.component';
 
 export const routes: Routes = [
   {
@@ -45,6 +46,11 @@ export const routes: Routes = [
   {
     path: 'reset-password',
     component: ResetPasswordComponent,
+  },
+  {
+    path: 'admin/facilities/create',
+    component: CreateFacilityComponent,
+    canActivate: [authGuard, adminGuard],
   },
   {
     path: '**',
