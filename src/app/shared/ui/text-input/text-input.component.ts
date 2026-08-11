@@ -13,7 +13,7 @@ export class TextInputComponent {
   readonly inputId = input('');
   readonly label = input.required<string>();
   readonly placeholder = input('');
-  readonly type = input<'text' | 'email' | 'password' | 'tel'>('text');
+  readonly type = input<'text' | 'email' | 'password' | 'tel' | 'number'>('text');
   readonly control = input.required<FormControl>();
   readonly showPassword = signal(false);
 
