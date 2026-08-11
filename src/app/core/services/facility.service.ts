@@ -87,4 +87,24 @@ export class FacilityService {
 
     return data;
   }
+  async getAllFacilities(): Promise<FacilityWithType[]> {
+    const { data, error } = await this.supabase
+      .from('facilities')
+      .select(
+        `
+      *,
+      facility_types (
+        id,
+        name
+      )
+    `,
+      )
+      .order('name');
+
+    if (error) {
+      throw error;
+    }
+
+    return data ?? [];
+  }
 }
