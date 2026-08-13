@@ -26,6 +26,7 @@ export class CreateFacilityComponent implements OnInit {
 
   readonly isSaving = signal(false);
   readonly facilityTypes = signal<FacilityType[]>([]);
+  readonly selectedImage = signal<File | null>(null);
 
   readonly facilityForm = this.fb.group({
     name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -34,17 +35,15 @@ export class CreateFacilityComponent implements OnInit {
     capacity: [0, [Validators.required, Validators.min(1)]],
     price_per_hour: [0, [Validators.required, Validators.min(0)]],
     status: ['ACTIVE' as FacilityStatus, Validators.required],
-
-    image_url: [''],
   });
 
   async ngOnInit(): Promise<void> {
     try {
       const types = await this.facilityService.getFacilityTypes();
-
       this.facilityTypes.set(types);
     } catch (error) {
       console.error('Error al cargar los tipos de instalación:', error);
+
       this.notificationService.error('No fue posible cargar los tipos de instalación.');
     }
   }
@@ -55,18 +54,23 @@ export class CreateFacilityComponent implements OnInit {
       return;
     }
 
-    this.isSaving.set(true);
-
     try {
+      this.isSaving.set(true);
       const formValue = this.facilityForm.getRawValue();
+      let imageUrl: string | null = null;
+      const image = this.selectedImage();
+
+      if (image) {
+        imageUrl = await this.facilityService.uploadFacilityImage(image);
+      }
 
       const facility = await this.facilityService.createFacility({
         ...formValue,
-        image_url: formValue.image_url || null,
+        image_url: imageUrl,
       });
 
       console.log('Instalación creada:', facility);
-      this.notificationService.success('La instalación se creó correctamente.');
+      this.notificationService.success('Instalación creada correctamente.');
 
       this.facilityForm.reset({
         name: '',
@@ -75,8 +79,9 @@ export class CreateFacilityComponent implements OnInit {
         capacity: 0,
         price_per_hour: 0,
         status: 'ACTIVE',
-        image_url: '',
       });
+
+      this.selectedImage.set(null);
     } catch (error) {
       console.error('Error al crear la instalación:', error);
 
@@ -84,6 +89,17 @@ export class CreateFacilityComponent implements OnInit {
     } finally {
       this.isSaving.set(false);
     }
+  }
+
+  onImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    if (!input.files || input.files.length === 0) {
+      this.selectedImage.set(null);
+      return;
+    }
+    this.selectedImage.set(input.files[0]);
+    console.log('Imagen seleccionada:', this.selectedImage());
   }
 
   cancel(): void {
@@ -94,7 +110,8 @@ export class CreateFacilityComponent implements OnInit {
       capacity: 0,
       price_per_hour: 0,
       status: 'ACTIVE',
-      image_url: '',
     });
+
+    this.selectedImage.set(null);
   }
 }

@@ -13,6 +13,7 @@ export type FacilityWithType = Facility & {
   facility_types: {
     id: string;
     name: string;
+    description: string | null;
   } | null;
 };
 export type FacilityGroup = {
@@ -50,10 +51,19 @@ export class FacilityService {
     return data ?? [];
   }
 
-  async getFacilityById(id: string): Promise<Facility> {
+  async getFacilityById(id: string): Promise<FacilityWithType> {
     const { data, error } = await this.supabase
       .from('facilities')
-      .select('*')
+      .select(
+        `
+      *,
+      facility_types (
+        id,
+        name,
+        description
+      )
+    `,
+      )
       .eq('id', id)
       .single();
 
@@ -86,6 +96,19 @@ export class FacilityService {
     }
 
     return data;
+  }
+  async uploadFacilityImage(file: File): Promise<string> {
+    const filePath = `${crypto.randomUUID()}-${file.name}`;
+
+    const { error } = await this.supabase.storage.from('facilities').upload(filePath, file);
+
+    if (error) {
+      throw error;
+    }
+
+    const { data } = this.supabase.storage.from('facilities').getPublicUrl(filePath);
+
+    return data.publicUrl;
   }
   async getAllFacilities(): Promise<FacilityWithType[]> {
     const { data, error } = await this.supabase

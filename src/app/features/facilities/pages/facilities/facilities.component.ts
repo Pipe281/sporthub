@@ -1,5 +1,4 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
-
 import {
   FacilityService,
   FacilityWithType,
