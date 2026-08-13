@@ -3,16 +3,18 @@ import { RouterLink } from '@angular/router';
 
 import { FacilityService, FacilityWithType } from '../../../../core/services/facility.service';
 import { ADMIN_ROUTES } from '../../../../core/constants/app-routes.constants';
+import { FacilityDetailModalComponent } from '../../../../shared/ui/facility-detail-modal/facility-detail-modal.component';
 
 @Component({
   selector: 'app-admin-facilities',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, FacilityDetailModalComponent],
   templateUrl: './admin-facilities.component.html',
 })
 export class AdminFacilitiesComponent implements OnInit {
   private readonly facilityService = inject(FacilityService);
   protected readonly ADMIN_ROUTES = ADMIN_ROUTES;
+  readonly selectedFacilityId = signal<string | null>(null);
 
   readonly facilities = signal<FacilityWithType[]>([]);
   readonly loading = signal(true);
@@ -33,5 +35,12 @@ export class AdminFacilitiesComponent implements OnInit {
     } finally {
       this.loading.set(false);
     }
+  }
+  openFacilityDetail(id: string): void {
+    this.selectedFacilityId.set(id);
+  }
+
+  closeFacilityDetail(): void {
+    this.selectedFacilityId.set(null);
   }
 }

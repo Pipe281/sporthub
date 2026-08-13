@@ -118,12 +118,13 @@
 
                 <!-- Acciones -->
                 <td class="px-6 py-4 text-right">
-                  <a
-                    [routerLink]="[ADMIN_ROUTES.FACILITIES, facility.id]"
-                    class="inline-flex items-center justify-center rounded-lg border border-zinc-700 px-3 py-2 text-sm font-medium text-zinc-300 transition-colors hover:border-[#9FEA00] hover:text-[#9FEA00]"
+                  <button
+                    type="button"
+                    (click)="openFacilityDetail(facility.id)"
+                    class="inline-flex cursor-pointer items-center justify-center rounded-lg border border-zinc-700 px-3 py-2 text-sm font-medium text-zinc-300 transition-colors hover:border-[#9FEA00] hover:text-[#9FEA00]"
                   >
                     Ver detalle
-                  </a>
+                  </button>
                 </td>
               </tr>
             }
@@ -196,12 +197,13 @@
 
             <!-- Acción -->
             <div class="mt-4 border-t border-zinc-800 pt-4">
-              <a
-                [routerLink]="[ADMIN_ROUTES.FACILITIES, facility.id]"
-                class="flex w-full items-center justify-center rounded-xl border border-zinc-700 px-4 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:border-[#9FEA00] hover:text-[#9FEA00]"
+              <button
+                type="button"
+                (click)="openFacilityDetail(facility.id)"
+                class="flex w-full cursor-pointer items-center justify-center rounded-xl border border-zinc-700 px-4 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:border-[#9FEA00] hover:text-[#9FEA00]"
               >
                 Ver detalle
-              </a>
+              </button>
             </div>
           </article>
         }
@@ -209,3 +211,5 @@
     }
   </div>
 </div>
+
+<app-facility-detail-modal [facilityId]="selectedFacilityId()" (closed)="closeFacilityDetail()" />

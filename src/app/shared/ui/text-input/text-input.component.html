@@ -19,7 +19,7 @@
       type="button"
       (click)="togglePassword()"
       [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
-      class="absolute top-1/2 right-3 flex -translate-y-1/2 items-center justify-center text-zinc-400 transition-colors duration-200 hover:text-[#9FEA00]"
+      class="absolute top-13 right-3 flex -translate-y-1/2 text-zinc-400 transition-colors duration-200 hover:text-[#9FEA00]"
     >
       <mat-icon>
         {{ showPassword() ? 'visibility_off' : 'visibility' }}
