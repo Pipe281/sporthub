@@ -1,23 +1,20 @@
 @if (showHeader()) {
   <header class="border-b border-zinc-800 bg-zinc-900 shadow-lg">
-    @if (menuOpen()) {
-      <div class="fixed inset-0 z-40 bg-black/60 lg:hidden" (click)="closeMenu()"></div>
-    }
-    <div class="mx-auto flex h-18 max-w-7xl items-center px-6">
+    <div class="mx-auto flex h-18 max-w-7xl items-center justify-between px-8">
       <!-- Logo -->
-      <div class="flex flex-shrink-0 items-center gap-3">
+      <div class="flex items-center gap-3">
         <img src="/images/logo_transparente.png" alt="SportHub" class="h-10 w-auto" />
-
-        <span class="text-xl font-bold text-white"> SportHub </span>
       </div>
 
       <!-- Navegación escritorio -->
-      <nav class="ml-10 hidden flex-1 items-center justify-center gap-8 lg:flex">
+      <!-- Solo aparece desde XL -->
+      <nav class="ml-10 hidden flex-1 items-center justify-center gap-8 xl:flex">
         @for (item of navigationItems(); track item.route) {
           <a
             [routerLink]="item.route"
             routerLinkActive="text-[#9FEA00]"
-            class="flex items-center gap-2 whitespace-nowrap font-medium text-zinc-300 transition-colors duration-200 hover:text-[#9FEA00]"
+            [class.xl:hidden]="item.route === ROUTES.PROFILE"
+            class="flex items-center gap-2 font-medium whitespace-nowrap text-zinc-300 transition-colors duration-200 hover:text-[#9FEA00]"
           >
             <mat-icon>
               {{ item.icon }}
@@ -32,26 +29,66 @@
 
       <!-- Zona derecha -->
       <div class="ml-auto flex flex-shrink-0 items-center gap-4">
-        <div class="hidden text-right xl:block">
-          <p class="text-sm font-semibold text-white">
-            {{ profile()?.first_name }}
-          </p>
+        <!-- Perfil -->
+        <!-- Solo aparece desde XL -->
+        <div class="group relative hidden xl:block">
+          <button
+            type="button"
+            class="flex items-center gap-2 rounded-xl px-3 py-2 text-white transition-colors duration-200 hover:bg-zinc-800"
+          >
+            <!-- Avatar -->
+            <div
+              class="flex h-9 w-9 items-center justify-center rounded-full bg-[#9FEA00] font-bold text-black"
+            >
+              {{ profile()?.first_name?.charAt(0) }}
+            </div>
+
+            <!-- Nombre -->
+            <div class="text-left">
+              <p class="text-sm font-semibold">
+                {{ profile()?.first_name }}
+              </p>
+
+              <p class="text-xs text-zinc-400">Mi cuenta</p>
+            </div>
+
+            <!-- Flecha -->
+            <mat-icon class="text-zinc-400"> expand_more </mat-icon>
+          </button>
+
+          <!-- Dropdown -->
+          <div
+            class="invisible absolute top-full right-0 z-50 mt-2 w-56 overflow-hidden rounded-xl border border-zinc-700 bg-zinc-900 opacity-0 shadow-xl transition-all duration-150 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100"
+          >
+            <!-- Mi perfil -->
+            <a
+              [routerLink]="ROUTES.PROFILE"
+              class="flex items-center gap-3 px-4 py-3 text-sm text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-[#9FEA00]"
+            >
+              <mat-icon class="text-[20px]"> person </mat-icon>
+
+              <span> Mi perfil </span>
+            </a>
+
+            <!-- Cerrar sesión -->
+            <button
+              type="button"
+              (click)="logout()"
+              class="flex w-full items-center gap-3 border-t border-zinc-800 px-4 py-3 text-sm text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-[#9FEA00]"
+            >
+              <mat-icon class="text-[20px]"> logout </mat-icon>
+
+              <span> Cerrar sesión </span>
+            </button>
+          </div>
         </div>
 
-        <!-- Solo escritorio -->
-        <button
-          type="button"
-          (click)="logout()"
-          class="hidden rounded-xl border border-zinc-700 px-4 py-2 text-sm text-zinc-300 transition-colors duration-200 hover:border-[#9FEA00] hover:text-[#9FEA00] lg:block"
-        >
-          Cerrar sesión
-        </button>
-
-        <!-- Solo móvil -->
+        <!-- Hamburguesa -->
+        <!-- Aparece por debajo de XL -->
         <button
           type="button"
           (click)="toggleMenu()"
-          class="rounded-xl p-2 text-zinc-300 transition hover:bg-zinc-800 lg:hidden"
+          class="rounded-xl p-2 text-zinc-300 transition hover:bg-zinc-800 xl:hidden"
         >
           <mat-icon>
             {{ menuOpen() ? 'close' : 'menu' }}
@@ -60,74 +97,84 @@
       </div>
     </div>
   </header>
-  <!-- Dropdown menu móvil -->
-  <div
-    class="fixed left-0 top-0 z-50 flex h-screen w-80 flex-col border-r border-zinc-800 bg-zinc-900 shadow-2xl transition-transform duration-300 lg:hidden"
-    [class.-translate-x-full]="!menuOpen()"
-    [class.translate-x-0]="menuOpen()"
-  >
-    <div class="flex items-center justify-between border-b border-zinc-800 p-6">
-      <!-- Encabezado -->
-      <div class="flex items-center gap-3">
-        <img src="/images/logo_transparente.png" alt="SportHub" class="h-10 w-auto" />
 
-        <span class="text-xl font-bold text-white"> SportHub </span>
-      </div>
+  <!-- Overlay -->
+  @if (menuOpen()) {
+    <div class="fixed inset-0 z-40 bg-black/60 xl:hidden" (click)="closeMenu()"></div>
+  }
 
-      <button
-        type="button"
-        (click)="closeMenu()"
-        class="rounded-lg p-2 text-zinc-300 transition hover:bg-zinc-800"
-      >
-        <mat-icon>close</mat-icon>
-      </button>
-    </div>
-    <!-- Menú -->
-    <nav class="flex-1 px-4 py-6">
-      <div class="space-y-2">
-        @for (item of navigationItems(); track item.route) {
-          <a
-            [routerLink]="item.route"
-            routerLinkActive="bg-zinc-800 text-[#9FEA00]"
-            (click)="closeMenu()"
-            class="flex items-center gap-4 rounded-xl px-4 py-3 text-zinc-300 transition-colors duration-200 hover:bg-zinc-800 hover:text-[#9FEA00]"
-          >
-            <mat-icon>
-              {{ item.icon }}
-            </mat-icon>
+  <!-- Drawer izquierdo -->
+  @if (menuOpen()) {
+    <aside
+      class="fixed top-0 left-0 z-50 flex h-full w-80 max-w-[85vw] flex-col border-r border-zinc-800 bg-zinc-900 shadow-2xl"
+    >
+      <!-- Header del Drawer -->
+      <div class="flex items-center justify-between border-b border-zinc-800 px-6 py-5">
+        <div class="flex items-center gap-3">
+          <img src="/images/logo_transparente.png" alt="SportHub" class="h-9 w-auto" />
 
-            <span>
-              {{ item.label }}
-            </span>
-          </a>
-        }
-      </div>
-    </nav>
-    <div class="border-t border-zinc-800 p-6">
-      <div class="mb-6 flex items-center gap-3">
-        <div
-          class="flex h-12 w-12 items-center justify-center rounded-full bg-[#9FEA00] font-bold text-black"
+          <span class="text-xl font-bold text-white"> SportHub </span>
+        </div>
+
+        <button
+          type="button"
+          (click)="closeMenu()"
+          class="rounded-lg p-2 text-zinc-300 transition hover:bg-zinc-800"
         >
-          {{ profile()?.first_name?.charAt(0) }}
-        </div>
-
-        <div>
-          <p class="font-semibold text-white">
-            {{ profile()?.first_name }}
-            {{ profile()?.last_name }}
-          </p>
-        </div>
+          <mat-icon> close </mat-icon>
+        </button>
       </div>
 
-      <button
-        type="button"
-        (click)="logout()"
-        class="flex w-full items-center justify-center rounded-xl border border-zinc-700 px-4 py-3 text-zinc-300 transition-colors duration-200 hover:border-[#9FEA00] hover:text-[#9FEA00]"
-      >
-        <mat-icon class="mr-2">logout</mat-icon>
+      <!-- Menú -->
+      <nav class="flex-1 overflow-y-auto px-4 py-6">
+        <div class="space-y-2">
+          @for (item of navigationItems(); track item.route) {
+            <a
+              [routerLink]="item.route"
+              routerLinkActive="bg-zinc-800 text-[#9FEA00]"
+              (click)="closeMenu()"
+              class="flex items-center gap-4 rounded-xl px-4 py-3 text-zinc-300 transition-colors duration-200 hover:bg-zinc-800 hover:text-[#9FEA00]"
+            >
+              <mat-icon>
+                {{ item.icon }}
+              </mat-icon>
 
-        Cerrar sesión
-      </button>
-    </div>
-  </div>
+              <span>
+                {{ item.label }}
+              </span>
+            </a>
+          }
+        </div>
+      </nav>
+
+      <!-- Usuario -->
+      <div class="border-t border-zinc-800 p-6">
+        <div class="mb-6 flex items-center gap-3">
+          <div
+            class="flex h-12 w-12 items-center justify-center rounded-full bg-[#9FEA00] font-bold text-black"
+          >
+            {{ profile()?.first_name?.charAt(0) }}
+          </div>
+
+          <div>
+            <p class="font-semibold text-white">
+              {{ profile()?.first_name }}
+              {{ profile()?.last_name }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Cerrar sesión -->
+        <button
+          type="button"
+          (click)="logout()"
+          class="flex w-full items-center justify-center rounded-xl border border-zinc-700 px-4 py-3 text-zinc-300 transition-colors duration-200 hover:border-[#9FEA00] hover:text-[#9FEA00]"
+        >
+          <mat-icon class="mr-2"> logout </mat-icon>
+
+          Cerrar sesión
+        </button>
+      </div>
+    </aside>
+  }
 }

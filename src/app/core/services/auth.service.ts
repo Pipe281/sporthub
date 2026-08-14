@@ -94,15 +94,12 @@ export class AuthService {
   }
   async initializeAuth(): Promise<void> {
     const session = await this.getSession();
-    console.log('initializeAuth iniciado');
     if (!session) {
       this._currentUser.set(null);
       console.log('No existe sesión.');
       return;
     }
-    console.log('Session:', session);
     await this.getCurrentUser();
-    console.log('Usuario autenticado:', this.currentUser());
   }
 
   async requestPasswordReset(email: string): Promise<void> {

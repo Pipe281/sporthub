@@ -1,33 +1,35 @@
-<div class="pb-2">
-  <label [for]="inputId()" class="mb-3 block text-[15px] font-medium text-zinc-200">
+<div class="relative">
+  <!-- Label -->
+  <label [for]="inputId()" class="mb-2 block text-sm font-medium text-zinc-200">
     {{ label() }}
   </label>
 
-  <div class="relative">
-    <input
-      [id]="inputId()"
-      [type]="inputType()"
-      [placeholder]="placeholder()"
-      [formControl]="control()"
-      class="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-2.5 pr-12 text-white placeholder:text-zinc-500 transition-all duration-300 focus:border-[#9FEA00] focus:outline-none focus:ring-2 focus:ring-[#9FEA00]/20"
-    />
+  <!-- Input -->
+  <input
+    [id]="inputId()"
+    [type]="inputType()"
+    [placeholder]="placeholder()"
+    [formControl]="control()"
+    class="form-input"
+  />
 
-    @if (type() === 'password') {
-      <button
-        type="button"
-        (click)="togglePassword()"
-        [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
-        class="absolute right-3 top-1/2 flex -translate-y-1/2 items-center justify-center text-zinc-400 transition-colors duration-200 hover:text-[#9FEA00]"
-      >
-        <mat-icon>
-          {{ showPassword() ? 'visibility_off' : 'visibility' }}
-        </mat-icon>
-      </button>
-    }
-  </div>
+  <!-- Mostrar / ocultar contraseña -->
+  @if (type() === 'password') {
+    <button
+      type="button"
+      (click)="togglePassword()"
+      [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+      class="absolute top-13 right-3 flex -translate-y-1/2 text-zinc-400 transition-colors duration-200 hover:text-[#9FEA00]"
+    >
+      <mat-icon>
+        {{ showPassword() ? 'visibility_off' : 'visibility' }}
+      </mat-icon>
+    </button>
+  }
 
+  <!-- Error -->
   @if (errorMessage) {
-    <p class="mt-2 text-sm text-red-400">
+    <p class="mt-1 text-sm text-red-400">
       {{ errorMessage }}
     </p>
   }

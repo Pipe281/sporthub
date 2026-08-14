@@ -1,0 +1,65 @@
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6 backdrop-blur-sm"
+  (click)="close()"
+>
+  <div
+    class="w-full max-w-lg rounded-2xl border border-zinc-800 bg-zinc-900 shadow-2xl"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Header -->
+    <div class="flex items-center justify-between border-b border-zinc-800 px-6 py-5">
+      <div>
+        {{ editing() ? 'Editar tipo de instalación' : 'Crear tipo de instalación' }}
+        <p class="mt-1 text-sm text-zinc-400">
+          {{
+            editing()
+              ? 'Modifica la información del tipo de instalación.'
+              : 'Agrega un nuevo tipo de instalación deportiva.'
+          }}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        (click)="close()"
+        class="flex h-9 w-9 items-center justify-center rounded-lg text-2xl text-zinc-400 transition hover:bg-zinc-800 hover:text-white"
+        aria-label="Cerrar"
+      >
+        ×
+      </button>
+    </div>
+
+    <!-- Formulario -->
+    <form [formGroup]="facilityTypeForm" (ngSubmit)="save()" class="space-y-5 p-6">
+      <!-- Nombre -->
+      <app-text-input
+        label="Nombre"
+        placeholder="Ej: Basketball"
+        [control]="facilityTypeForm.controls.name"
+      />
+
+      <!-- Descripción -->
+      <app-text-input
+        label="Descripción"
+        placeholder="Descripción del tipo de instalación"
+        [control]="facilityTypeForm.controls.description"
+      />
+
+      <!-- Acciones -->
+      <div class="flex justify-end gap-3 border-t border-zinc-800 pt-5">
+        <app-button type="button" variant="outline" [disabled]="loading()" (clicked)="close()">
+          Cancelar
+        </app-button>
+
+        <app-button
+          type="submit"
+          variant="primary"
+          [disabled]="facilityTypeForm.invalid"
+          [loading]="loading()"
+        >
+          {{ editing() ? 'Guardar cambios' : 'Crear tipo' }}
+        </app-button>
+      </div>
+    </form>
+  </div>
+</div>

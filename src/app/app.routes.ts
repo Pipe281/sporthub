@@ -10,6 +10,10 @@ import { AdminComponent } from './features/admin/pages/admin/admin.component';
 import { ForgotPasswordComponent } from './features/auth/pages/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './features/auth/pages/reset-password/reset-password.component';
 import { NotFoundComponent } from './features/shared/pages/not-found/not-found.component';
+import { CreateFacilityComponent } from './features/admin/pages/create-facility/create-facility.component';
+import { FacilitiesComponent } from './features/facilities/pages/facilities/facilities.component';
+import { AdminFacilitiesComponent } from './features/admin/pages/admin-facilities.component/admin-facilities.component';
+import { AdminFacilityTypesComponent } from './features/admin/pages/admin-facility-types/admin-facility-types.component';
 
 export const routes: Routes = [
   {
@@ -45,6 +49,26 @@ export const routes: Routes = [
   {
     path: 'reset-password',
     component: ResetPasswordComponent,
+  },
+  {
+    path: 'facilities',
+    component: FacilitiesComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'admin/facilities/create',
+    component: CreateFacilityComponent,
+    canActivate: [authGuard, adminGuard],
+  },
+  {
+    path: 'admin/facility-types',
+    component: AdminFacilityTypesComponent,
+    canActivate: [authGuard, adminGuard],
+  },
+  {
+    path: 'admin/facilities',
+    component: AdminFacilitiesComponent,
+    canActivate: [authGuard, adminGuard],
   },
   {
     path: '**',
