@@ -1,0 +1,153 @@
+<div class="min-h-screen bg-zinc-950 px-4 py-8 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-5xl">
+    <!-- Encabezado -->
+    <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-white">Tipos de instalaciones</h1>
+        <p class="mt-2 text-zinc-400">Gestiona los tipos de instalaciones deportivas.</p>
+      </div>
+
+      <button
+        type="button"
+        (click)="openCreateModal()"
+        class="inline-flex cursor-pointer items-center justify-center rounded-xl bg-[#9FEA00] px-5 py-3 font-semibold text-black transition hover:brightness-110"
+      >
+        Crear tipo
+      </button>
+    </div>
+
+    <!-- Loading -->
+    @if (loading()) {
+      <div
+        class="flex min-h-60 items-center justify-center rounded-2xl border border-zinc-800 bg-zinc-900"
+      >
+        <p class="text-zinc-400">Cargando tipos de instalaciones...</p>
+      </div>
+    }
+
+    <!-- Error -->
+    @else if (error()) {
+      <div class="rounded-2xl border border-red-900/50 bg-red-950/30 p-6 text-center">
+        <p class="text-red-400">No fue posible cargar los tipos de instalaciones.</p>
+      </div>
+    }
+
+    <!-- Sin tipos -->
+    @else if (facilityTypes().length === 0) {
+      <div class="rounded-2xl border border-zinc-800 bg-zinc-900 p-10 text-center">
+        <p class="text-lg font-semibold text-white">No existen tipos de instalaciones.</p>
+        <p class="mt-2 text-sm text-zinc-400">Puedes crear un nuevo tipo para comenzar.</p>
+      </div>
+    }
+
+    <!-- Listado -->
+    @else {
+      <div class="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900">
+        <table class="w-full">
+          <thead class="border-b border-zinc-800 bg-zinc-950">
+            <tr>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-zinc-300">Nombre</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-zinc-300">Descripción</th>
+              <th class="px-6 py-4 text-right text-sm font-semibold text-zinc-300">Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-zinc-800">
+            @for (type of facilityTypes(); track type.id) {
+              <tr class="transition-colors hover:bg-zinc-800/50">
+                <td class="px-6 py-4 font-medium text-white">
+                  {{ type.name }}
+                </td>
+
+                <td class="px-6 py-4 text-zinc-300">
+                  {{ type.description ?? 'Sin descripción' }}
+                </td>
+
+                <td class="px-6 py-4 text-right">
+                  <div class="flex justify-end gap-2">
+                    <button
+                      type="button"
+                      (click)="openEditModal(type)"
+                      class="cursor-pointer rounded-lg border border-zinc-700 px-3 py-2 text-sm font-medium text-zinc-300 transition-colors hover:border-[#9FEA00] hover:text-[#9FEA00]"
+                    >
+                      Editar
+                    </button>
+
+                    <button
+                      type="button"
+                      (click)="openDeleteModal(type)"
+                      class="cursor-pointer rounded-lg border border-red-900/50 px-3 py-2 text-sm font-medium text-red-400 transition-colors hover:border-red-500 hover:text-red-300"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+
+@if (showCreateModal()) {
+  <app-facility-type-form-modal
+    (closed)="closeCreateModal()"
+    (created)="onFacilityTypeCreated($event)"
+  />
+}
+@if (selectedFacilityType(); as type) {
+  <app-facility-type-form-modal
+    [facilityType]="type"
+    (closed)="closeEditModal()"
+    (updated)="onFacilityTypeUpdated($event)"
+  />
+}
+@if (selectedFacilityTypeToDelete(); as type) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6 backdrop-blur-sm"
+    (click)="closeDeleteModal()"
+  >
+    <div
+      class="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-900 shadow-2xl"
+      (click)="$event.stopPropagation()"
+    >
+      <!-- Header -->
+      <div class="border-b border-zinc-800 px-6 py-5">
+        <h2 class="text-xl font-bold text-white">Eliminar tipo de instalación</h2>
+        <p class="mt-1 text-sm text-zinc-400">Esta acción no se puede deshacer.</p>
+      </div>
+
+      <!-- Contenido -->
+      <div class="p-6">
+        <p class="text-zinc-300">
+          ¿Estás seguro de que deseas eliminar el tipo
+          <span class="font-semibold text-white"> "{{ type.name }}" </span>?
+        </p>
+        <p class="mt-3 text-sm text-zinc-500">
+          Si existen instalaciones asociadas a este tipo, no será posible eliminarlo.
+        </p>
+      </div>
+
+      <!-- Acciones -->
+      <div class="flex justify-end gap-3 border-t border-zinc-800 px-6 py-5">
+        <button
+          type="button"
+          (click)="closeDeleteModal()"
+          class="cursor-pointer rounded-xl border border-zinc-700 px-5 py-2.5 font-semibold text-zinc-300 transition hover:border-zinc-500 hover:text-white"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          (click)="deleteFacilityType()"
+          class="cursor-pointer rounded-xl bg-red-600 px-5 py-2.5 font-semibold text-white transition hover:bg-red-500"
+        >
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+}

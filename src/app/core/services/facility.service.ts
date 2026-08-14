@@ -5,9 +5,11 @@ import { SupabaseService } from './supabase.service';
 import { Tables, TablesInsert, TablesUpdate } from '../types/database.types';
 
 export type Facility = Tables<'facilities'>;
-export type FacilityType = Tables<'facility_types'>;
 export type FacilityInsert = TablesInsert<'facilities'>;
 export type FacilityUpdate = TablesUpdate<'facilities'>;
+export type FacilityType = Tables<'facility_types'>;
+export type FacilityTypeInsert = TablesInsert<'facility_types'>;
+export type FacilityTypeUpdate = TablesUpdate<'facility_types'>;
 export type FacilityStatus = Facility['status'];
 
 export type FacilityWithType = Facility & {
@@ -85,6 +87,40 @@ export class FacilityService {
     return data ?? [];
   }
 
+  async createFacilityType(facilityType: FacilityTypeInsert): Promise<FacilityType> {
+    const { data, error } = await this.supabase
+      .from('facility_types')
+      .insert(facilityType)
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
+  async updateFacilityType(id: string, facilityType: FacilityTypeUpdate): Promise<FacilityType> {
+    const { data, error } = await this.supabase
+      .from('facility_types')
+      .update(facilityType)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
+  async deleteFacilityType(id: string): Promise<void> {
+    const { error } = await this.supabase.from('facility_types').delete().eq('id', id);
+
+    if (error) {
+      throw error;
+    }
+  }
   async createFacility(facility: FacilityInsert): Promise<Facility> {
     const { data, error } = await this.supabase
       .from('facilities')
