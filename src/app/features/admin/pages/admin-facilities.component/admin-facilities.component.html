@@ -212,4 +212,8 @@
   </div>
 </div>
 
-<app-facility-detail-modal [facilityId]="selectedFacilityId()" (closed)="closeFacilityDetail()" />
+<app-facility-detail-modal
+  [facilityId]="selectedFacilityId()"
+  (closed)="closeFacilityDetail()"
+  (facilityUpdated)="onFacilityUpdated($event)"
+/>

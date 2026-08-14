@@ -43,4 +43,11 @@ export class AdminFacilitiesComponent implements OnInit {
   closeFacilityDetail(): void {
     this.selectedFacilityId.set(null);
   }
+  onFacilityUpdated(updatedFacility: FacilityWithType): void {
+    this.facilities.update((facilities) =>
+      facilities.map((facility) =>
+        facility.id === updatedFacility.id ? updatedFacility : facility,
+      ),
+    );
+  }
 }

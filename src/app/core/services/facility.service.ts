@@ -2,11 +2,12 @@ import { Injectable, inject } from '@angular/core';
 
 import { SupabaseService } from './supabase.service';
 
-import { Tables, TablesInsert } from '../types/database.types';
+import { Tables, TablesInsert, TablesUpdate } from '../types/database.types';
 
 export type Facility = Tables<'facilities'>;
 export type FacilityType = Tables<'facility_types'>;
 export type FacilityInsert = TablesInsert<'facilities'>;
+export type FacilityUpdate = TablesUpdate<'facilities'>;
 export type FacilityStatus = Facility['status'];
 
 export type FacilityWithType = Facility & {
@@ -88,6 +89,20 @@ export class FacilityService {
     const { data, error } = await this.supabase
       .from('facilities')
       .insert(facility)
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
+  async updateFacility(id: string, facility: FacilityUpdate): Promise<Facility> {
+    const { data, error } = await this.supabase
+      .from('facilities')
+      .update(facility)
+      .eq('id', id)
       .select()
       .single();
 
