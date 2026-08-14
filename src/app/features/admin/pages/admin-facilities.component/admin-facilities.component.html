@@ -15,7 +15,21 @@
         Crear instalación
       </a>
     </div>
+    <!-- Búsqueda -->
+    <div class="mb-6">
+      <label for="search" class="mb-2 block text-sm font-medium text-zinc-300">
+        Buscar instalación
+      </label>
 
+      <input
+        id="search"
+        type="text"
+        [value]="searchTerm()"
+        (input)="onSearch($event)"
+        placeholder="Buscar por nombre..."
+        class="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-white transition outline-none placeholder:text-zinc-500 focus:border-[#9FEA00]"
+      />
+    </div>
     <!-- Loading -->
     @if (loading()) {
       <div
@@ -36,8 +50,16 @@
     @else if (facilities().length === 0) {
       <div class="rounded-2xl border border-zinc-800 bg-zinc-900 p-10 text-center">
         <p class="text-lg font-semibold text-white">No existen instalaciones registradas.</p>
-
         <p class="mt-2 text-sm text-zinc-400">Puedes crear una nueva instalación para comenzar.</p>
+      </div>
+    }
+    <!-- No hay coincidencias -->
+    @else if (filteredFacilities().length === 0) {
+      <div class="rounded-2xl border border-zinc-800 bg-zinc-900 p-10 text-center">
+        <p class="text-lg font-semibold text-white">No se encontraron instalaciones.</p>
+        <p class="mt-2 text-sm text-zinc-400">
+          No existen instalaciones que coincidan con "{{ searchTerm() }}".
+        </p>
       </div>
     }
 
@@ -49,23 +71,18 @@
           <thead class="border-b border-zinc-800 bg-zinc-950">
             <tr>
               <th class="px-6 py-4 text-left text-sm font-semibold text-zinc-300">Nombre</th>
-
               <th class="px-6 py-4 text-left text-sm font-semibold text-zinc-300">Tipo</th>
-
               <th class="px-6 py-4 text-left text-sm font-semibold text-zinc-300">Capacidad</th>
-
               <th class="px-6 py-4 text-left text-sm font-semibold text-zinc-300">
                 Precio por hora
               </th>
-
               <th class="px-6 py-4 text-left text-sm font-semibold text-zinc-300">Estado</th>
-
               <th class="px-6 py-4 text-center text-sm font-semibold text-zinc-300">Acciones</th>
             </tr>
           </thead>
 
           <tbody class="divide-y divide-zinc-800">
-            @for (facility of facilities(); track facility.id) {
+            @for (facility of filteredFacilities(); track facility.id) {
               <tr class="transition-colors hover:bg-zinc-800/50">
                 <!-- Nombre -->
                 <td class="px-6 py-4 font-medium text-white">
