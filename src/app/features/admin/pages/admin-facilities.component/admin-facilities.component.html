@@ -30,6 +30,61 @@
         class="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-white transition outline-none placeholder:text-zinc-500 focus:border-[#9FEA00]"
       />
     </div>
+    <!-- Filtros -->
+    <div class="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <!-- Tipo -->
+      <div>
+        <label for="facility-type" class="mb-2 block text-sm font-medium text-zinc-300">
+          Tipo
+        </label>
+
+        <select
+          id="facility-type"
+          [value]="selectedType()"
+          (change)="onTypeChange($event)"
+          class="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-white transition outline-none focus:border-[#9FEA00]"
+        >
+          <option value="">Todos los tipos</option>
+
+          @for (type of facilityTypes(); track type.id) {
+            <option [value]="type.id">
+              {{ type.name }}
+            </option>
+          }
+        </select>
+      </div>
+
+      <!-- Estado -->
+      <div>
+        <label for="facility-status" class="mb-2 block text-sm font-medium text-zinc-300">
+          Estado
+        </label>
+
+        <select
+          id="facility-status"
+          [value]="selectedStatus()"
+          (change)="onStatusChange($event)"
+          class="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-white transition outline-none focus:border-[#9FEA00]"
+        >
+          <option value="">Todos los estados</option>
+
+          <option value="ACTIVE">Activa</option>
+          <option value="INACTIVE">Inactiva</option>
+          <option value="MAINTENANCE">Mantenimiento</option>
+        </select>
+      </div>
+
+      <!-- Limpiar -->
+      <div class="flex items-end">
+        <button
+          type="button"
+          (click)="clearFilters()"
+          class="w-full rounded-xl border border-zinc-700 px-4 py-3 font-semibold text-zinc-300 transition hover:border-[#9FEA00] hover:text-[#9FEA00]"
+        >
+          Limpiar filtros
+        </button>
+      </div>
+    </div>
     <!-- Loading -->
     @if (loading()) {
       <div
@@ -151,7 +206,7 @@
 
       <!-- Mobile / Tablet -->
       <div class="grid gap-4 lg:hidden">
-        @for (facility of facilities(); track facility.id) {
+        @for (facility of filteredFacilities(); track facility.id) {
           <article class="rounded-2xl border border-zinc-800 bg-zinc-900 p-5">
             <!-- Encabezado tarjeta -->
             <div class="mb-4 flex items-start justify-between gap-4">

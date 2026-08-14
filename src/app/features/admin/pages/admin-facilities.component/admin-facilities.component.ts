@@ -1,7 +1,12 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { FacilityService, FacilityWithType } from '../../../../core/services/facility.service';
+import {
+  FacilityService,
+  FacilityStatus,
+  FacilityType,
+  FacilityWithType,
+} from '../../../../core/services/facility.service';
 import { ADMIN_ROUTES } from '../../../../core/constants/app-routes.constants';
 import { FacilityDetailModalComponent } from '../../../../shared/ui/facility-detail-modal/facility-detail-modal.component';
 
@@ -17,7 +22,10 @@ export class AdminFacilitiesComponent implements OnInit {
   readonly selectedFacilityId = signal<string | null>(null);
 
   readonly facilities = signal<FacilityWithType[]>([]);
+  readonly facilityTypes = signal<FacilityType[]>([]);
   readonly searchTerm = signal('');
+  readonly selectedType = signal('');
+  readonly selectedStatus = signal<FacilityStatus | ''>('');
   readonly loading = signal(true);
   readonly error = signal(false);
 
@@ -26,9 +34,13 @@ export class AdminFacilitiesComponent implements OnInit {
       this.loading.set(true);
       this.error.set(false);
 
-      const facilities = await this.facilityService.getAllFacilities();
+      const [facilities, types] = await Promise.all([
+        this.facilityService.getAllFacilities(),
+        this.facilityService.getFacilityTypes(),
+      ]);
 
       this.facilities.set(facilities);
+      this.facilityTypes.set(types);
     } catch (error) {
       console.error('Error al cargar las instalaciones:', error);
 
@@ -53,16 +65,32 @@ export class AdminFacilitiesComponent implements OnInit {
   }
   readonly filteredFacilities = computed(() => {
     const search = this.searchTerm().trim().toLowerCase();
+    const type = this.selectedType();
+    const status = this.selectedStatus();
 
-    if (!search) {
-      return this.facilities();
-    }
+    return this.facilities().filter((facility) => {
+      const matchesSearch = !search || facility.name.toLowerCase().includes(search);
+      const matchesType = !type || facility.facility_type_id === type;
+      const matchesStatus = !status || facility.status === status;
 
-    return this.facilities().filter((facility) => facility.name.toLowerCase().includes(search));
+      return matchesSearch && matchesType && matchesStatus;
+    });
   });
   onSearch(event: Event): void {
     const input = event.target as HTMLInputElement;
-
     this.searchTerm.set(input.value);
+  }
+  onTypeChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    this.selectedType.set(select.value);
+  }
+  onStatusChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    this.selectedStatus.set(select.value as FacilityStatus | '');
+  }
+  clearFilters(): void {
+    this.searchTerm.set('');
+    this.selectedType.set('');
+    this.selectedStatus.set('');
   }
 }
