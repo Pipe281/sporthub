@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { FacilityService, FacilityWithType } from '../../../../core/services/facility.service';
@@ -17,6 +17,7 @@ export class AdminFacilitiesComponent implements OnInit {
   readonly selectedFacilityId = signal<string | null>(null);
 
   readonly facilities = signal<FacilityWithType[]>([]);
+  readonly searchTerm = signal('');
   readonly loading = signal(true);
   readonly error = signal(false);
 
@@ -49,5 +50,19 @@ export class AdminFacilitiesComponent implements OnInit {
         facility.id === updatedFacility.id ? updatedFacility : facility,
       ),
     );
+  }
+  readonly filteredFacilities = computed(() => {
+    const search = this.searchTerm().trim().toLowerCase();
+
+    if (!search) {
+      return this.facilities();
+    }
+
+    return this.facilities().filter((facility) => facility.name.toLowerCase().includes(search));
+  });
+  onSearch(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    this.searchTerm.set(input.value);
   }
 }
