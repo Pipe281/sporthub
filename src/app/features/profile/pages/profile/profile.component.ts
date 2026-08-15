@@ -12,7 +12,6 @@ import { ButtonComponent } from '../../../../shared/ui/botton/button.component';
   standalone: true,
   imports: [ReactiveFormsModule, TextInputComponent, ButtonComponent],
   templateUrl: './profile.component.html',
-  styleUrl: './profile.component.scss',
 })
 export class ProfileComponent implements OnInit {
   private readonly profileService = inject(ProfileService);

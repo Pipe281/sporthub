@@ -16,10 +16,6 @@
             [class.xl:hidden]="item.route === ROUTES.PROFILE"
             class="flex items-center gap-2 font-medium whitespace-nowrap text-zinc-300 transition-colors duration-200 hover:text-[#9FEA00]"
           >
-            <mat-icon>
-              {{ item.icon }}
-            </mat-icon>
-
             <span>
               {{ item.label }}
             </span>
@@ -135,10 +131,6 @@
               (click)="closeMenu()"
               class="flex items-center gap-4 rounded-xl px-4 py-3 text-zinc-300 transition-colors duration-200 hover:bg-zinc-800 hover:text-[#9FEA00]"
             >
-              <mat-icon>
-                {{ item.icon }}
-              </mat-icon>
-
               <span>
                 {{ item.label }}
               </span>
