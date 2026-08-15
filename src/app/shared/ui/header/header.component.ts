@@ -18,7 +18,6 @@ import { ProfileService } from '../../../core/services/profile.service';
   standalone: true,
   imports: [RouterLink, RouterLinkActive, MatIconModule],
   templateUrl: './header.component.html',
-  styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
   // Dependencias
@@ -44,54 +43,44 @@ export class HeaderComponent {
     {
       label: 'Inicio',
       route: CUSTOMER_ROUTES.DASHBOARD,
-      icon: 'home',
     },
     {
       label: 'Instalaciones',
       route: CUSTOMER_ROUTES.FACILITIES,
-      icon: 'fitness_center',
     },
     {
       label: 'Mis reservas',
       route: CUSTOMER_ROUTES.RESERVATIONS,
-      icon: 'event',
     },
     {
       label: 'Mi perfil',
       route: CUSTOMER_ROUTES.PROFILE,
-      icon: 'person',
     },
   ];
   protected readonly adminNavigationItems: readonly NavigationItem[] = [
     {
       label: 'Dashboard',
       route: ADMIN_ROUTES.DASHBOARD,
-      icon: 'dashboard',
     },
     {
       label: 'Clientes',
       route: ADMIN_ROUTES.CLIENTS,
-      icon: 'group',
     },
     {
       label: 'Instalaciones',
       route: ADMIN_ROUTES.FACILITIES,
-      icon: 'fitness_center',
     },
     {
       label: 'Calendario',
       route: ADMIN_ROUTES.SCHEDULES,
-      icon: 'schedule',
     },
     {
       label: 'Tipos',
       route: ADMIN_ROUTES.FACILITY_TYPES,
-      icon: 'category',
     },
     {
       label: 'Mi perfil',
       route: ADMIN_ROUTES.PROFILE,
-      icon: 'person',
     },
   ];
   readonly navigationItems = computed(() => {
