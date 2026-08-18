@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { CustomerService, Customer } from '../../../../core/services/customer.service';
 import { CustomerDetailModalComponent } from '../../../../shared/ui/customer-detail-modal/customer-detail-modal.component';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-admin-clients',
@@ -11,6 +12,7 @@ import { CustomerDetailModalComponent } from '../../../../shared/ui/customer-det
 })
 export class AdminClientsComponent implements OnInit {
   private readonly customerService = inject(CustomerService);
+  private readonly notificationService = inject(NotificationService);
 
   readonly customers = signal<Customer[]>([]);
   readonly searchTerm = signal('');
@@ -62,6 +64,48 @@ export class AdminClientsComponent implements OnInit {
   closeCustomerDetail(): void {
     this.detailModalOpen.set(false);
     this.selectedCustomerId.set(null);
+  }
+  async blockCustomer(customerId: string | null): Promise<void> {
+    if (!customerId) {
+      return;
+    }
+
+    try {
+      await this.customerService.blockCustomer(customerId);
+
+      this.customers.update((customers) =>
+        customers.map((customer) =>
+          customer.id === customerId ? { ...customer, status: 'BLOCKED' } : customer,
+        ),
+      );
+
+      this.notificationService.success('Cliente bloqueado correctamente.');
+    } catch (error) {
+      console.error('Error al bloquear el cliente:', error);
+
+      this.notificationService.error('No fue posible bloquear el cliente.');
+    }
+  }
+  async unblockCustomer(customerId: string | null): Promise<void> {
+    if (!customerId) {
+      return;
+    }
+
+    try {
+      await this.customerService.unblockCustomer(customerId);
+
+      this.customers.update((customers) =>
+        customers.map((customer) =>
+          customer.id === customerId ? { ...customer, status: 'ACTIVE' } : customer,
+        ),
+      );
+
+      this.notificationService.success('Cliente desbloqueado correctamente.');
+    } catch (error) {
+      console.error('Error al desbloquear el cliente:', error);
+
+      this.notificationService.error('No fue posible desbloquear el cliente.');
+    }
   }
   onSearch(event: Event): void {
     const input = event.target as HTMLInputElement;

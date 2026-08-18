@@ -67,4 +67,29 @@ export class CustomerService {
 
     return data ?? [];
   }
+  async blockCustomer(customerId: string): Promise<void> {
+    const { error } = await this.supabase
+      .from('profiles')
+      .update({
+        status: 'BLOCKED',
+      })
+      .eq('id', customerId);
+
+    if (error) {
+      throw error;
+    }
+  }
+
+  async unblockCustomer(customerId: string): Promise<void> {
+    const { error } = await this.supabase
+      .from('profiles')
+      .update({
+        status: 'ACTIVE',
+      })
+      .eq('id', customerId);
+
+    if (error) {
+      throw error;
+    }
+  }
 }
