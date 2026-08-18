@@ -6,7 +6,20 @@
 
       <p class="mt-2 text-zinc-400">Gestiona los clientes registrados en SportHub.</p>
     </div>
+    <!-- Búsqueda -->
+    <div class="mb-6">
+      <label for="customer-search" class="mb-2 block text-sm font-medium text-zinc-300">
+        Buscar cliente
+      </label>
 
+      <input
+        id="customer-search"
+        type="text"
+        placeholder="Buscar por nombre, apellido o correo..."
+        (input)="onSearch($event)"
+        class="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-white transition outline-none focus:border-[#9FEA00]"
+      />
+    </div>
     <!-- Loading -->
     @if (loading()) {
       <div
@@ -27,6 +40,17 @@
     @else if (customers().length === 0) {
       <div class="rounded-2xl border border-zinc-800 bg-zinc-900 p-10 text-center">
         <p class="text-lg font-semibold text-white">No existen clientes registrados.</p>
+      </div>
+    }
+
+    <!-- Sin resultados de búsqueda -->
+    @else if (filteredCustomers().length === 0) {
+      <div class="rounded-2xl border border-zinc-800 bg-zinc-900 p-10 text-center">
+        <p class="text-lg font-semibold text-white">No se encontraron clientes.</p>
+
+        <p class="mt-2 text-zinc-400">
+          No existen clientes que coincidan con "{{ searchTerm() }}".
+        </p>
       </div>
     }
 
@@ -53,7 +77,7 @@
           </thead>
 
           <tbody class="divide-y divide-zinc-800">
-            @for (customer of customers(); track customer.id) {
+            @for (customer of filteredCustomers(); track customer.id) {
               <tr class="transition-colors hover:bg-zinc-800/50">
                 <td class="px-6 py-4 font-medium text-white">
                   {{ customer.first_name }} {{ customer.last_name }}
@@ -107,7 +131,7 @@
       </div>
       <!-- Mobile / Tablet -->
       <div class="grid gap-4 lg:hidden">
-        @for (customer of customers(); track customer.id) {
+        @for (customer of filteredCustomers(); track customer.id) {
           <article class="rounded-2xl border border-zinc-800 bg-zinc-900 p-5">
             <!-- Encabezado -->
             <div class="mb-4 flex items-start justify-between gap-4">

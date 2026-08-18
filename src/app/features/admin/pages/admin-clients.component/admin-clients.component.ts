@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { CustomerService, Customer } from '../../../../core/services/customer.service';
 import { CustomerDetailModalComponent } from '../../../../shared/ui/customer-detail-modal/customer-detail-modal.component';
@@ -13,6 +13,22 @@ export class AdminClientsComponent implements OnInit {
   private readonly customerService = inject(CustomerService);
 
   readonly customers = signal<Customer[]>([]);
+  readonly searchTerm = signal('');
+  readonly filteredCustomers = computed(() => {
+    const term = this.searchTerm().trim().toLowerCase();
+
+    if (!term) {
+      return this.customers();
+    }
+
+    return this.customers().filter((customer) => {
+      const firstName = customer.first_name?.toLowerCase() ?? '';
+      const lastName = customer.last_name?.toLowerCase() ?? '';
+      const email = customer.email?.toLowerCase() ?? '';
+
+      return firstName.includes(term) || lastName.includes(term) || email.includes(term);
+    });
+  });
 
   readonly loading = signal(true);
   readonly error = signal(false);
@@ -46,5 +62,10 @@ export class AdminClientsComponent implements OnInit {
   closeCustomerDetail(): void {
     this.detailModalOpen.set(false);
     this.selectedCustomerId.set(null);
+  }
+  onSearch(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    this.searchTerm.set(input.value);
   }
 }
