@@ -115,14 +115,36 @@
                   }
                 </td>
 
-                <td class="px-6 py-4 text-center">
-                  <button
-                    type="button"
-                    (click)="openCustomerDetail(customer.id)"
-                    class="cursor-pointer rounded-lg border border-zinc-700 px-3 py-2 text-sm font-medium text-zinc-300 transition-colors hover:border-[#9FEA00] hover:text-[#9FEA00]"
-                  >
-                    Ver detalle
-                  </button>
+                <td class="px-6 py-4">
+                  <div class="flex items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      (click)="openCustomerDetail(customer.id)"
+                      class="w-32 cursor-pointer rounded-lg border border-zinc-700 px-3 py-2 text-sm font-medium text-zinc-300 transition-colors hover:border-[#9FEA00] hover:text-[#9FEA00]"
+                    >
+                      Ver detalle
+                    </button>
+
+                    @if (customer.status === 'ACTIVE') {
+                      <button
+                        type="button"
+                        (click)="blockCustomer(customer.id)"
+                        class="w-32 cursor-pointer rounded-lg border border-red-900/60 px-3 py-2 text-sm font-medium text-red-400 transition-colors hover:border-red-500 hover:bg-red-500/10"
+                      >
+                        Bloquear
+                      </button>
+                    }
+
+                    @if (customer.status === 'BLOCKED') {
+                      <button
+                        type="button"
+                        (click)="unblockCustomer(customer.id)"
+                        class="w-32 cursor-pointer rounded-lg border border-green-900/60 px-3 py-2 text-sm font-medium text-green-400 transition-colors hover:border-green-500 hover:bg-green-500/10"
+                      >
+                        Desbloquear
+                      </button>
+                    }
+                  </div>
                 </td>
               </tr>
             }
@@ -184,7 +206,7 @@
             </div>
 
             <!-- Acción -->
-            <div class="mt-4 border-t border-zinc-800 pt-4">
+            <div class="mt-4 grid gap-2 border-t border-zinc-800 pt-4">
               <button
                 type="button"
                 (click)="openCustomerDetail(customer.id)"
@@ -192,6 +214,26 @@
               >
                 Ver detalle
               </button>
+
+              @if (customer.status === 'ACTIVE') {
+                <button
+                  type="button"
+                  (click)="blockCustomer(customer.id)"
+                  class="flex w-full cursor-pointer items-center justify-center rounded-xl border border-red-900/60 px-4 py-2.5 text-sm font-medium text-red-400 transition-colors hover:border-red-500 hover:bg-red-500/10"
+                >
+                  Bloquear
+                </button>
+              }
+
+              @if (customer.status === 'BLOCKED') {
+                <button
+                  type="button"
+                  (click)="unblockCustomer(customer.id)"
+                  class="flex w-full cursor-pointer items-center justify-center rounded-xl border border-green-900/60 px-4 py-2.5 text-sm font-medium text-green-400 transition-colors hover:border-green-500 hover:bg-green-500/10"
+                >
+                  Desbloquear
+                </button>
+              }
             </div>
           </article>
         }
