@@ -14,6 +14,7 @@ import { CreateFacilityComponent } from './features/admin/pages/create-facility/
 import { FacilitiesComponent } from './features/facilities/pages/facilities/facilities.component';
 import { AdminFacilitiesComponent } from './features/admin/pages/admin-facilities.component/admin-facilities.component';
 import { AdminFacilityTypesComponent } from './features/admin/pages/admin-facility-types/admin-facility-types.component';
+import { AdminClientsComponent } from './features/admin/pages/admin-clients.component/admin-clients.component';
 
 export const routes: Routes = [
   {
@@ -68,6 +69,11 @@ export const routes: Routes = [
   {
     path: 'admin/facilities',
     component: AdminFacilitiesComponent,
+    canActivate: [authGuard, adminGuard],
+  },
+  {
+    path: 'admin/clients',
+    component: AdminClientsComponent,
     canActivate: [authGuard, adminGuard],
   },
   {

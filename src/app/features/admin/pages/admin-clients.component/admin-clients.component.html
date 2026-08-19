@@ -1,0 +1,246 @@
+<div class="min-h-screen bg-zinc-950 px-4 py-8 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-7xl">
+    <!-- Encabezado -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-white">Clientes</h1>
+
+      <p class="mt-2 text-zinc-400">Gestiona los clientes registrados en SportHub.</p>
+    </div>
+    <!-- Búsqueda -->
+    <div class="mb-6">
+      <label for="customer-search" class="mb-2 block text-sm font-medium text-zinc-300">
+        Buscar cliente
+      </label>
+
+      <input
+        id="customer-search"
+        type="text"
+        placeholder="Buscar por nombre, apellido o correo..."
+        (input)="onSearch($event)"
+        class="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-white transition outline-none focus:border-[#9FEA00]"
+      />
+    </div>
+    <!-- Loading -->
+    @if (loading()) {
+      <div
+        class="flex min-h-60 items-center justify-center rounded-2xl border border-zinc-800 bg-zinc-900"
+      >
+        <p class="text-zinc-400">Cargando clientes...</p>
+      </div>
+    }
+
+    <!-- Error -->
+    @else if (error()) {
+      <div class="rounded-2xl border border-red-900/50 bg-red-950/30 p-6 text-center">
+        <p class="text-red-400">No fue posible cargar los clientes.</p>
+      </div>
+    }
+
+    <!-- Sin clientes -->
+    @else if (customers().length === 0) {
+      <div class="rounded-2xl border border-zinc-800 bg-zinc-900 p-10 text-center">
+        <p class="text-lg font-semibold text-white">No existen clientes registrados.</p>
+      </div>
+    }
+
+    <!-- Sin resultados de búsqueda -->
+    @else if (filteredCustomers().length === 0) {
+      <div class="rounded-2xl border border-zinc-800 bg-zinc-900 p-10 text-center">
+        <p class="text-lg font-semibold text-white">No se encontraron clientes.</p>
+
+        <p class="mt-2 text-zinc-400">
+          No existen clientes que coincidan con "{{ searchTerm() }}".
+        </p>
+      </div>
+    }
+
+    <!-- Tabla Desktop -->
+    @else {
+      <div class="hidden overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 lg:block">
+        <table class="w-full">
+          <thead class="border-b border-zinc-800 bg-zinc-950">
+            <tr>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-zinc-300">Nombre</th>
+
+              <th class="px-6 py-4 text-left text-sm font-semibold text-zinc-300">Correo</th>
+
+              <th class="px-6 py-4 text-left text-sm font-semibold text-zinc-300">Teléfono</th>
+
+              <th class="px-6 py-4 text-left text-sm font-semibold text-zinc-300">
+                Fecha de registro
+              </th>
+
+              <th class="px-6 py-4 text-left text-sm font-semibold text-zinc-300">Estado</th>
+
+              <th class="px-6 py-4 text-center text-sm font-semibold text-zinc-300">Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-zinc-800">
+            @for (customer of filteredCustomers(); track customer.id) {
+              <tr class="transition-colors hover:bg-zinc-800/50">
+                <td class="px-6 py-4 font-medium text-white">
+                  {{ customer.first_name }} {{ customer.last_name }}
+                </td>
+
+                <td class="px-6 py-4 text-zinc-300">
+                  {{ customer.email }}
+                </td>
+
+                <td class="px-6 py-4 text-zinc-300">
+                  {{ customer.phone || '-' }}
+                </td>
+
+                <td class="px-6 py-4 text-zinc-300">
+                  {{ customer.created_at | date: 'dd/MM/yyyy' }}
+                </td>
+
+                <td class="px-6 py-4">
+                  @switch (customer.status) {
+                    @case ('ACTIVE') {
+                      <span
+                        class="inline-flex rounded-full bg-green-500/10 px-3 py-1 text-xs font-semibold text-green-400"
+                      >
+                        Activo
+                      </span>
+                    }
+
+                    @case ('BLOCKED') {
+                      <span
+                        class="inline-flex rounded-full bg-red-500/10 px-3 py-1 text-xs font-semibold text-red-400"
+                      >
+                        Bloqueado
+                      </span>
+                    }
+                  }
+                </td>
+
+                <td class="px-6 py-4">
+                  <div class="flex items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      (click)="openCustomerDetail(customer.id)"
+                      class="w-32 cursor-pointer rounded-lg border border-zinc-700 px-3 py-2 text-sm font-medium text-zinc-300 transition-colors hover:border-[#9FEA00] hover:text-[#9FEA00]"
+                    >
+                      Ver detalle
+                    </button>
+
+                    @if (customer.status === 'ACTIVE') {
+                      <button
+                        type="button"
+                        (click)="blockCustomer(customer.id)"
+                        class="w-32 cursor-pointer rounded-lg border border-red-900/60 px-3 py-2 text-sm font-medium text-red-400 transition-colors hover:border-red-500 hover:bg-red-500/10"
+                      >
+                        Bloquear
+                      </button>
+                    }
+
+                    @if (customer.status === 'BLOCKED') {
+                      <button
+                        type="button"
+                        (click)="unblockCustomer(customer.id)"
+                        class="w-32 cursor-pointer rounded-lg border border-green-900/60 px-3 py-2 text-sm font-medium text-green-400 transition-colors hover:border-green-500 hover:bg-green-500/10"
+                      >
+                        Desbloquear
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <!-- Mobile / Tablet -->
+      <div class="grid gap-4 lg:hidden">
+        @for (customer of filteredCustomers(); track customer.id) {
+          <article class="rounded-2xl border border-zinc-800 bg-zinc-900 p-5">
+            <!-- Encabezado -->
+            <div class="mb-4 flex items-start justify-between gap-4">
+              <div>
+                <h2 class="font-bold text-white">
+                  {{ customer.first_name }} {{ customer.last_name }}
+                </h2>
+
+                <p class="mt-1 text-sm text-zinc-400">
+                  {{ customer.email }}
+                </p>
+              </div>
+
+              @switch (customer.status) {
+                @case ('ACTIVE') {
+                  <span
+                    class="shrink-0 rounded-full bg-green-500/10 px-3 py-1 text-xs font-semibold text-green-400"
+                  >
+                    Activo
+                  </span>
+                }
+
+                @case ('BLOCKED') {
+                  <span
+                    class="shrink-0 rounded-full bg-red-500/10 px-3 py-1 text-xs font-semibold text-red-400"
+                  >
+                    Bloqueado
+                  </span>
+                }
+              }
+            </div>
+
+            <!-- Información -->
+            <div class="grid gap-4 border-t border-zinc-800 pt-4">
+              <div>
+                <p class="text-xs text-zinc-500">Teléfono</p>
+
+                <p class="mt-1 text-sm font-medium text-zinc-200">
+                  {{ customer.phone || '-' }}
+                </p>
+              </div>
+
+              <div>
+                <p class="text-xs text-zinc-500">Fecha de registro</p>
+
+                <p class="mt-1 text-sm font-medium text-zinc-200">
+                  {{ customer.created_at | date: 'dd/MM/yyyy' }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Acción -->
+            <div class="mt-4 grid gap-2 border-t border-zinc-800 pt-4">
+              <button
+                type="button"
+                (click)="openCustomerDetail(customer.id)"
+                class="flex w-full cursor-pointer items-center justify-center rounded-xl border border-zinc-700 px-4 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:border-[#9FEA00] hover:text-[#9FEA00]"
+              >
+                Ver detalle
+              </button>
+
+              @if (customer.status === 'ACTIVE') {
+                <button
+                  type="button"
+                  (click)="blockCustomer(customer.id)"
+                  class="flex w-full cursor-pointer items-center justify-center rounded-xl border border-red-900/60 px-4 py-2.5 text-sm font-medium text-red-400 transition-colors hover:border-red-500 hover:bg-red-500/10"
+                >
+                  Bloquear
+                </button>
+              }
+
+              @if (customer.status === 'BLOCKED') {
+                <button
+                  type="button"
+                  (click)="unblockCustomer(customer.id)"
+                  class="flex w-full cursor-pointer items-center justify-center rounded-xl border border-green-900/60 px-4 py-2.5 text-sm font-medium text-green-400 transition-colors hover:border-green-500 hover:bg-green-500/10"
+                >
+                  Desbloquear
+                </button>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</div>
+@if (detailModalOpen()) {
+  <app-customer-detail-modal [customerId]="selectedCustomerId()" (closed)="closeCustomerDetail()" />
+}
