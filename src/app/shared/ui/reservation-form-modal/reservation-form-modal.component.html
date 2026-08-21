@@ -27,55 +27,90 @@
     <!-- Stepper -->
     <div class="border-b border-zinc-800 px-6 py-5">
       <div class="flex items-center">
-        <!-- Paso 1 -->
+        <!-- Paso 1: Instalación -->
         <div class="flex items-center gap-3">
           <div
-            class="flex h-8 w-8 items-center justify-center rounded-full bg-[#9FEA00] text-sm font-bold text-zinc-950"
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm font-bold transition-all duration-300"
+            [class.border-[#9FEA00]]="currentStep() > 1"
+            [class.bg-[#9FEA00]/15]="currentStep() > 1"
+            [class.text-[#9FEA00]]="currentStep() > 1"
+            [class.border-[#9FEA00]]="currentStep() === 1"
+            [class.bg-[#9FEA00]]="currentStep() === 1"
+            [class.text-zinc-950]="currentStep() === 1"
+            [class.ring-4]="currentStep() === 1"
+            [class.ring-[#9FEA00]/20]="currentStep() === 1"
           >
-            ✓
-          </div>
-
-          <div class="hidden sm:block">
-            <p class="text-sm font-semibold text-white">Instalación</p>
-
-            <p class="text-xs text-zinc-500">Seleccionada</p>
-          </div>
-        </div>
-
-        <div class="mx-4 h-px flex-1 bg-zinc-800"></div>
-
-        <!-- Paso 2 -->
-        <div class="flex items-center gap-3">
-          @if (selectedDate()) {
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-full bg-[#9FEA00] text-sm font-bold text-zinc-950"
-            >
+            @if (currentStep() > 1) {
               ✓
-            </div>
-          } @else {
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold"
-              [class.bg-[#9FEA00]]="currentStep() >= 2"
-              [class.text-zinc-950]="currentStep() >= 2"
-              [class.bg-zinc-800]="currentStep() < 2"
-              [class.text-zinc-400]="currentStep() < 2"
-            >
-              2
-            </div>
-          }
+            } @else {
+              1
+            }
+          </div>
 
           <div class="hidden sm:block">
             <p
-              class="text-sm font-semibold"
-              [class.text-white]="currentStep() >= 2"
+              class="text-sm font-semibold transition"
+              [class.text-[#9FEA00]]="currentStep() === 1"
+              [class.text-zinc-300]="currentStep() > 1"
+            >
+              Instalación
+            </p>
+
+            <p class="text-xs text-zinc-500">
+              @if (currentStep() > 1) {
+                Seleccionada
+              } @else {
+                Paso actual
+              }
+            </p>
+          </div>
+        </div>
+
+        <!-- Línea -->
+        <div
+          class="mx-4 h-px flex-1 transition-colors duration-300"
+          [class.bg-[#9FEA00]/50]="currentStep() > 1"
+          [class.bg-zinc-800]="currentStep() <= 1"
+        ></div>
+
+        <!-- Paso 2: Fecha -->
+        <div class="flex items-center gap-3">
+          <div
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm font-bold transition-all duration-300"
+            [class.border-[#9FEA00]]="currentStep() > 2"
+            [class.bg-[#9FEA00]/15]="currentStep() > 2"
+            [class.text-[#9FEA00]]="currentStep() > 2"
+            [class.border-[#9FEA00]]="currentStep() === 2"
+            [class.bg-[#9FEA00]]="currentStep() === 2"
+            [class.text-zinc-950]="currentStep() === 2"
+            [class.ring-4]="currentStep() === 2"
+            [class.ring-[#9FEA00]/20]="currentStep() === 2"
+            [class.border-zinc-700]="currentStep() < 2"
+            [class.bg-zinc-800]="currentStep() < 2"
+            [class.text-zinc-500]="currentStep() < 2"
+          >
+            @if (currentStep() > 2) {
+              ✓
+            } @else {
+              2
+            }
+          </div>
+
+          <div class="hidden sm:block">
+            <p
+              class="text-sm font-semibold transition"
+              [class.text-[#9FEA00]]="currentStep() === 2"
+              [class.text-zinc-300]="currentStep() > 2"
               [class.text-zinc-500]="currentStep() < 2"
             >
               Fecha
             </p>
 
             <p class="text-xs text-zinc-500">
-              @if (selectedDate()) {
+              @if (currentStep() > 2) {
                 Seleccionada
+              } @else if (currentStep() === 2) {
+                Paso actual
               } @else {
                 Selecciona un día
               }
@@ -83,71 +118,107 @@
           </div>
         </div>
 
-        <div class="mx-4 h-px flex-1 bg-zinc-800"></div>
+        <!-- Línea -->
+        <div
+          class="mx-4 h-px flex-1 transition-colors duration-300"
+          [class.bg-[#9FEA00]/50]="currentStep() > 2"
+          [class.bg-zinc-800]="currentStep() <= 2"
+        ></div>
 
-        <!-- Paso 3 -->
+        <!-- Paso 3: Duración y horario -->
         <div class="flex items-center gap-3">
-          @if (selectedTimeSlot()) {
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-full bg-[#9FEA00] text-sm font-bold text-zinc-950"
-            >
+          <div
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm font-bold transition-all duration-300"
+            [class.border-[#9FEA00]]="currentStep() > 3"
+            [class.bg-[#9FEA00]/15]="currentStep() > 3"
+            [class.text-[#9FEA00]]="currentStep() > 3"
+            [class.border-[#9FEA00]]="currentStep() === 3"
+            [class.bg-[#9FEA00]]="currentStep() === 3"
+            [class.text-zinc-950]="currentStep() === 3"
+            [class.ring-4]="currentStep() === 3"
+            [class.ring-[#9FEA00]/20]="currentStep() === 3"
+            [class.border-zinc-700]="currentStep() < 3"
+            [class.bg-zinc-800]="currentStep() < 3"
+            [class.text-zinc-500]="currentStep() < 3"
+          >
+            @if (currentStep() > 3) {
               ✓
-            </div>
-          } @else {
-            <div
-              class="flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold"
-              [class.bg-[#9FEA00]]="currentStep() >= 3"
-              [class.text-zinc-950]="currentStep() >= 3"
-              [class.bg-zinc-800]="currentStep() < 3"
-              [class.text-zinc-400]="currentStep() < 3"
-            >
+            } @else {
               3
-            </div>
-          }
+            }
+          </div>
 
           <div class="hidden sm:block">
             <p
-              class="text-sm font-semibold"
-              [class.text-white]="currentStep() >= 3"
+              class="text-sm font-semibold transition"
+              [class.text-[#9FEA00]]="currentStep() === 3"
+              [class.text-zinc-300]="currentStep() > 3"
               [class.text-zinc-500]="currentStep() < 3"
             >
               Horario
             </p>
 
             <p class="text-xs text-zinc-500">
-              @if (selectedTimeSlot()) {
+              @if (currentStep() > 3) {
                 Seleccionado
+              } @else if (currentStep() === 3) {
+                Paso actual
               } @else {
                 Selecciona un horario
               }
             </p>
           </div>
         </div>
-        <!-- Paso 4-->
-        <div class="mx-4 h-px flex-1 bg-zinc-800"></div>
 
-        <!-- Paso 4 -->
+        <!-- Línea -->
+        <div
+          class="mx-4 h-px flex-1 transition-colors duration-300"
+          [class.bg-[#9FEA00]/50]="currentStep() > 3"
+          [class.bg-zinc-800]="currentStep() <= 3"
+        ></div>
+
+        <!-- Paso 4: Confirmar -->
         <div class="flex items-center gap-3">
           <div
-            class="flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold"
-            [class.bg-[#9FEA00]]="currentStep() >= 4"
-            [class.text-zinc-950]="currentStep() >= 4"
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm font-bold transition-all duration-300"
+            [class.border-[#9FEA00]]="currentStep() > 4"
+            [class.bg-[#9FEA00]/15]="currentStep() > 4"
+            [class.text-[#9FEA00]]="currentStep() > 4"
+            [class.border-[#9FEA00]]="currentStep() === 4"
+            [class.bg-[#9FEA00]]="currentStep() === 4"
+            [class.text-zinc-950]="currentStep() === 4"
+            [class.ring-4]="currentStep() === 4"
+            [class.ring-[#9FEA00]/20]="currentStep() === 4"
+            [class.border-zinc-700]="currentStep() < 4"
             [class.bg-zinc-800]="currentStep() < 4"
-            [class.text-zinc-400]="currentStep() < 4"
+            [class.text-zinc-500]="currentStep() < 4"
           >
-            4
+            @if (reservationSuccess()) {
+              ✓
+            } @else {
+              4
+            }
           </div>
 
           <div class="hidden sm:block">
             <p
-              class="text-sm font-semibold"
-              [class.text-white]="currentStep() >= 4"
+              class="text-sm font-semibold transition"
+              [class.text-[#9FEA00]]="currentStep() === 4"
+              [class.text-zinc-300]="reservationSuccess()"
               [class.text-zinc-500]="currentStep() < 4"
             >
               Confirmar
             </p>
 
-            <p class="text-xs text-zinc-500">Revisa tu reserva</p>
+            <p class="text-xs text-zinc-500">
+              @if (reservationSuccess()) {
+                Completada
+              } @else if (currentStep() === 4) {
+                Paso actual
+              } @else {
+                Revisa tu reserva
+              }
+            </p>
           </div>
         </div>
       </div>
@@ -169,7 +240,7 @@
       </div>
 
       <!-- Paso 2 -->
-      @if (currentStep() === 1 || currentStep() === 2) {
+      @if (currentStep() === 1) {
         <div>
           <h3 class="text-lg font-semibold text-white">Selecciona una fecha</h3>
 
@@ -218,13 +289,82 @@
           </div>
         </div>
       }
+      <!-- Paso 2: Duración -->
+      @if (currentStep() === 2) {
+        <section>
+          <button
+            type="button"
+            (click)="goToDateStep()"
+            class="mb-6 cursor-pointer text-sm font-medium text-[#9FEA00] transition hover:underline"
+          >
+            ← Cambiar fecha
+          </button>
 
+          <h2 class="text-xl font-bold text-white">Selecciona la duración</h2>
+
+          <p class="mt-2 text-sm text-zinc-400">
+            Fecha seleccionada:
+
+            <span class="font-medium text-[#9FEA00]">
+              {{ selectedDate() | date: 'fullDate' : undefined : 'es' }}
+            </span>
+          </p>
+
+          <p class="mt-6 text-sm font-semibold text-white">¿Cuánto tiempo deseas reservar?</p>
+
+          <p class="mt-1 text-sm text-zinc-400">Puedes reservar la instalación por 1 o 2 horas.</p>
+
+          <div class="mt-4 grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              (click)="selectDuration(1)"
+              class="cursor-pointer rounded-xl border px-4 py-4 text-left transition"
+              [class.border-[#9FEA00]]="selectedDuration() === 1"
+              [class.bg-[#9FEA00]/10]="selectedDuration() === 1"
+              [class.border-zinc-700]="selectedDuration() !== 1"
+              [class.bg-zinc-950]="selectedDuration() !== 1"
+              [class.hover:border-[#9FEA00]]="selectedDuration() !== 1"
+            >
+              <p
+                class="font-semibold"
+                [class.text-[#9FEA00]]="selectedDuration() === 1"
+                [class.text-white]="selectedDuration() !== 1"
+              >
+                1 hora
+              </p>
+
+              <p class="mt-1 text-xs text-zinc-500">Reserva estándar</p>
+            </button>
+
+            <button
+              type="button"
+              (click)="selectDuration(2)"
+              class="cursor-pointer rounded-xl border px-4 py-4 text-left transition"
+              [class.border-[#9FEA00]]="selectedDuration() === 2"
+              [class.bg-[#9FEA00]/10]="selectedDuration() === 2"
+              [class.border-zinc-700]="selectedDuration() !== 2"
+              [class.bg-zinc-950]="selectedDuration() !== 2"
+              [class.hover:border-[#9FEA00]]="selectedDuration() !== 2"
+            >
+              <p
+                class="font-semibold"
+                [class.text-[#9FEA00]]="selectedDuration() === 2"
+                [class.text-white]="selectedDuration() !== 2"
+              >
+                2 horas
+              </p>
+
+              <p class="mt-1 text-xs text-zinc-500">Reserva extendida</p>
+            </button>
+          </div>
+        </section>
+      }
       <!-- Paso 3: Horarios -->
       @if (currentStep() === 3) {
         <section>
           <button
             type="button"
-            (click)="goToDateStep()"
+            (click)="goToDurationStep()"
             class="mb-6 cursor-pointer text-sm font-medium text-[#9FEA00] transition hover:underline"
           >
             ← Cambiar fecha
@@ -406,7 +546,7 @@
 
                 <button
                   type="button"
-                  (click)="close()"
+                  (click)="goToMyReservations()"
                   class="mt-6 w-full cursor-pointer rounded-xl bg-[#9FEA00] px-4 py-3 text-sm font-bold text-zinc-950 transition hover:brightness-110"
                 >
                   Aceptar
