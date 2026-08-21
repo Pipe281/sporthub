@@ -4,15 +4,18 @@ import {
   FacilityWithType,
   FacilityGroup,
 } from '../../../../core/services/facility.service';
-
+import { ReservationFormModalComponent } from '../../../../shared/ui/reservation-form-modal/reservation-form-modal.component';
 @Component({
   selector: 'app-facilities',
   standalone: true,
-  imports: [],
+  imports: [ReservationFormModalComponent],
   templateUrl: './facilities.component.html',
 })
 export class FacilitiesComponent implements OnInit {
   private readonly facilityService = inject(FacilityService);
+
+  readonly selectedFacilityId = signal<string | null>(null);
+  readonly reservationModalOpen = signal(false);
 
   readonly facilities = signal<FacilityWithType[]>([]);
   readonly facilitiesByType = computed<FacilityGroup[]>(() => {
@@ -59,5 +62,14 @@ export class FacilitiesComponent implements OnInit {
     } finally {
       this.loading.set(false);
     }
+  }
+  openReservationModal(facilityId: string): void {
+    this.selectedFacilityId.set(facilityId);
+    this.reservationModalOpen.set(true);
+  }
+
+  closeReservationModal(): void {
+    this.reservationModalOpen.set(false);
+    this.selectedFacilityId.set(null);
   }
 }
