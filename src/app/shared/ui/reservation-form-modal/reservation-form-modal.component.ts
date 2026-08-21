@@ -1,7 +1,9 @@
 import { DatePipe, registerLocaleData } from '@angular/common';
+import { Router } from '@angular/router';
 import localeEs from '@angular/common/locales/es';
 import { Component, computed, inject, input, OnInit, output, signal } from '@angular/core';
 
+import { CUSTOMER_ROUTES } from '../../../core/constants/app-routes.constants';
 import { ReservationService, TimeSlot } from '../../../core/services/reservation.service';
 
 registerLocaleData(localeEs);
@@ -18,6 +20,7 @@ interface CalendarDay {
   templateUrl: './reservation-form-modal.component.html',
 })
 export class ReservationFormModalComponent implements OnInit {
+  private readonly router = inject(Router);
   private readonly reservationService = inject(ReservationService);
 
   readonly facilityId = input.required<string>();
@@ -30,6 +33,7 @@ export class ReservationFormModalComponent implements OnInit {
 
   readonly selectedDate = signal<Date | null>(null);
   readonly selectedTimeSlot = signal<TimeSlot | null>(null);
+  readonly selectedDuration = signal<1 | 2>(1);
 
   readonly currentMonth = signal(new Date());
 
@@ -112,21 +116,6 @@ export class ReservationFormModalComponent implements OnInit {
 
     this.selectedDate.set(date);
     this.selectedTimeSlot.set(null);
-    this.reservationError.set(null);
-    this.reservationSuccess.set(false);
-    this.currentStep.set(3);
-
-    this.loadTimeSlots(date);
-  }
-
-  selectTimeSlot(slot: TimeSlot): void {
-    this.selectedTimeSlot.set(slot);
-    this.reservationError.set(null);
-  }
-
-  goToDateStep(): void {
-    this.selectedDate.set(null);
-    this.selectedTimeSlot.set(null);
 
     this.timeSlots.set([]);
     this.slotsError.set(false);
@@ -135,6 +124,23 @@ export class ReservationFormModalComponent implements OnInit {
     this.reservationSuccess.set(false);
 
     this.currentStep.set(2);
+  }
+
+  selectTimeSlot(slot: TimeSlot): void {
+    this.selectedTimeSlot.set(slot);
+    this.reservationError.set(null);
+  }
+
+  goToDateStep(): void {
+    this.selectedTimeSlot.set(null);
+
+    this.timeSlots.set([]);
+    this.slotsError.set(false);
+    this.unavailableReason.set(null);
+    this.reservationError.set(null);
+    this.reservationSuccess.set(false);
+
+    this.currentStep.set(1);
   }
 
   goToTimeStep(): void {
@@ -165,6 +171,7 @@ export class ReservationFormModalComponent implements OnInit {
       const result = await this.reservationService.getAvailableSlotsForDate(
         this.facilityId(),
         date,
+        this.selectedDuration(),
       );
 
       this.unavailableReason.set(result.unavailableReason);
@@ -223,5 +230,34 @@ export class ReservationFormModalComponent implements OnInit {
 
   private startOfDay(date: Date): Date {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  }
+
+  selectDuration(duration: 1 | 2): void {
+    this.selectedDuration.set(duration);
+
+    this.selectedTimeSlot.set(null);
+    this.reservationError.set(null);
+    this.reservationSuccess.set(false);
+
+    const date = this.selectedDate();
+
+    if (!date) {
+      return;
+    }
+
+    this.currentStep.set(3);
+
+    void this.loadTimeSlots(date);
+  }
+  goToDurationStep(): void {
+    this.selectedTimeSlot.set(null);
+    this.reservationError.set(null);
+    this.reservationSuccess.set(false);
+
+    this.currentStep.set(2);
+  }
+  goToMyReservations(): void {
+    this.close();
+    void this.router.navigateByUrl(CUSTOMER_ROUTES.RESERVATIONS);
   }
 }

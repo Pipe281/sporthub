@@ -41,14 +41,6 @@ export interface Reservation {
   endAt: string;
   status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
 }
-export interface Reservation {
-  id: string;
-  customerId: string;
-  facilityId: string;
-  startAt: string;
-  endAt: string;
-  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
-}
 
 @Injectable({
   providedIn: 'root',
@@ -111,8 +103,6 @@ export class ReservationService {
       throw error;
     }
 
-    console.log('Disponibilidad recibida:', data);
-
     return (data ?? []).map(
       (reservation: {
         id: string;
@@ -131,19 +121,12 @@ export class ReservationService {
   async getAvailableSlotsForDate(
     facilityId: string,
     date: Date,
+    durationHours: 1 | 2 = 1,
   ): Promise<FacilityAvailabilityResult> {
     // 1. Verificar estado de la instalación
     const facility = await this.getFacilityStatus(facilityId);
 
-    if (!facility) {
-      return {
-        isClosed: true,
-        unavailableReason: 'INACTIVE',
-        slots: [],
-      };
-    }
-
-    if (facility.status === 'INACTIVE') {
+    if (!facility || facility.status === 'INACTIVE') {
       return {
         isClosed: true,
         unavailableReason: 'INACTIVE',
@@ -159,7 +142,7 @@ export class ReservationService {
       };
     }
 
-    // 2. Verificar horario de funcionamiento
+    // 2. Obtener horario de funcionamiento
     const operatingHours = await this.getOperatingHours(date);
 
     if (
@@ -175,8 +158,12 @@ export class ReservationService {
       };
     }
 
-    // 3. Generar bloques de 1 hora
-    const slots = this.generateTimeSlots(operatingHours.opensAt, operatingHours.closesAt);
+    // 3. Generar horarios según duración seleccionada
+    const slots = this.generateTimeSlots(
+      operatingHours.opensAt,
+      operatingHours.closesAt,
+      durationHours,
+    );
 
     const formattedDate = this.formatDate(date);
 
@@ -204,10 +191,30 @@ export class ReservationService {
     date: Date,
     timeSlot: TimeSlot,
   ): Promise<Reservation> {
-    const formattedDate = this.formatDate(date);
+    const [startHour, startMinute] = timeSlot.startAt.split(':').map(Number);
 
-    const startAt = `${formattedDate}T${timeSlot.startAt}:00`;
-    const endAt = `${formattedDate}T${timeSlot.endAt}:00`;
+    const [endHour, endMinute] = timeSlot.endAt.split(':').map(Number);
+
+    const startDate = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      startHour,
+      startMinute,
+      0,
+    );
+
+    const endDate = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      endHour,
+      endMinute,
+      0,
+    );
+
+    const startAt = startDate.toISOString();
+    const endAt = endDate.toISOString();
 
     const { data, error } = await this.supabase.rpc('create_reservation', {
       p_facility_id: facilityId,
@@ -229,7 +236,7 @@ export class ReservationService {
     };
   }
 
-  generateTimeSlots(opensAt: string, closesAt: string): TimeSlot[] {
+  generateTimeSlots(opensAt: string, closesAt: string, durationHours: 1 | 2): TimeSlot[] {
     const slots: TimeSlot[] = [];
 
     const [openHour, openMinute] = opensAt.split(':').map(Number);
@@ -240,8 +247,10 @@ export class ReservationService {
 
     const closingMinutes = closeHour * 60 + closeMinute;
 
+    const durationMinutes = durationHours * 60;
+
     while (currentMinutes < closingMinutes) {
-      const endMinutes = currentMinutes + 60;
+      const endMinutes = currentMinutes + durationMinutes;
 
       if (endMinutes > closingMinutes) {
         break;
@@ -252,6 +261,7 @@ export class ReservationService {
         endAt: this.minutesToTime(endMinutes),
       });
 
+      // Los horarios comienzan cada 1 hora
       currentMinutes += 60;
     }
 
@@ -290,7 +300,13 @@ export class ReservationService {
   }
 
   private extractTime(dateTime: string): string {
-    return dateTime.substring(11, 16);
+    const date = new Date(dateTime);
+
+    const hours = date.getHours().toString().padStart(2, '0');
+
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+
+    return `${hours}:${minutes}`;
   }
 
   private formatDate(date: Date): string {
@@ -310,6 +326,7 @@ export class ReservationService {
 
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
   }
+
   async getMyReservations(): Promise<Reservation[]> {
     const {
       data: { user },
@@ -343,6 +360,7 @@ export class ReservationService {
       status: reservation.status,
     }));
   }
+
   async cancelMyReservation(reservationId: string): Promise<void> {
     const { error } = await this.supabase.rpc('cancel_my_reservation', {
       p_reservation_id: reservationId,
