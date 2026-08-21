@@ -41,6 +41,14 @@ export interface Reservation {
   endAt: string;
   status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
 }
+export interface Reservation {
+  id: string;
+  customerId: string;
+  facilityId: string;
+  startAt: string;
+  endAt: string;
+  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
+}
 
 @Injectable({
   providedIn: 'root',
@@ -301,5 +309,47 @@ export class ReservationService {
     const minutes = totalMinutes % 60;
 
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  }
+  async getMyReservations(): Promise<Reservation[]> {
+    const {
+      data: { user },
+      error: userError,
+    } = await this.supabase.auth.getUser();
+
+    if (userError) {
+      throw userError;
+    }
+
+    if (!user) {
+      throw new Error('No hay un usuario autenticado.');
+    }
+
+    const { data, error } = await this.supabase
+      .from('reservations')
+      .select('id, customer_id, facility_id, start_at, end_at, status')
+      .eq('customer_id', user.id)
+      .order('start_at', { ascending: true });
+
+    if (error) {
+      throw error;
+    }
+
+    return (data ?? []).map((reservation) => ({
+      id: reservation.id,
+      customerId: reservation.customer_id,
+      facilityId: reservation.facility_id,
+      startAt: reservation.start_at,
+      endAt: reservation.end_at,
+      status: reservation.status,
+    }));
+  }
+  async cancelMyReservation(reservationId: string): Promise<void> {
+    const { error } = await this.supabase.rpc('cancel_my_reservation', {
+      p_reservation_id: reservationId,
+    });
+
+    if (error) {
+      throw error;
+    }
   }
 }

@@ -4,7 +4,7 @@ import { guestGuard } from './core/guards/guest.guard';
 
 import { LoginComponent } from './features/auth/pages/login/login.component';
 import { RegisterComponent } from './features/auth/pages/register/register.component';
-import { ProfileComponent } from './features/profile/pages/profile/profile.component';
+import { ProfileComponent } from './features/customer/pages/profile/profile.component';
 import { adminGuard } from './core/guards/admin.guard';
 import { AdminComponent } from './features/admin/pages/admin/admin.component';
 import { ForgotPasswordComponent } from './features/auth/pages/forgot-password/forgot-password.component';
@@ -15,6 +15,7 @@ import { FacilitiesComponent } from './features/facilities/pages/facilities/faci
 import { AdminFacilitiesComponent } from './features/admin/pages/admin-facilities.component/admin-facilities.component';
 import { AdminFacilityTypesComponent } from './features/admin/pages/admin-facility-types/admin-facility-types.component';
 import { AdminClientsComponent } from './features/admin/pages/admin-clients.component/admin-clients.component';
+import { ReservationsComponent } from './features/customer/pages/reservations/reservations.component';
 
 export const routes: Routes = [
   {
@@ -54,6 +55,11 @@ export const routes: Routes = [
   {
     path: 'facilities',
     component: FacilitiesComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'reservations',
+    component: ReservationsComponent,
     canActivate: [authGuard],
   },
   {
