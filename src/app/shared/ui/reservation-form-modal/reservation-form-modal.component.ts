@@ -144,7 +144,9 @@ export class ReservationFormModalComponent implements OnInit {
   }
 
   goToTimeStep(): void {
-    this.reservationError.set(null);
+    this.reservationError.set(
+      'El horario seleccionado ya no está disponible. Por favor, selecciona otro horario.',
+    );
     this.reservationSuccess.set(false);
 
     this.currentStep.set(3);
@@ -200,10 +202,21 @@ export class ReservationFormModalComponent implements OnInit {
       await this.reservationService.createReservation(this.facilityId(), date, timeSlot);
 
       this.reservationSuccess.set(true);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error al crear la reserva:', error);
 
-      this.reservationError.set('No fue posible crear la reserva. Inténtalo nuevamente.');
+      if (
+        error instanceof Error &&
+        error.message.includes('RESERVATION_TIME_IS_NO_LONGER_AVAILABLE')
+      ) {
+        this.reservationError.set(
+          'El horario seleccionado ya no está disponible. Por favor, selecciona otro horario.',
+        );
+
+        this.currentStep.set(3);
+      } else {
+        this.reservationError.set('No fue posible crear la reserva. Inténtalo nuevamente.');
+      }
     } finally {
       this.creatingReservation.set(false);
     }
