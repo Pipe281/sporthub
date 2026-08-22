@@ -37,6 +37,7 @@ export interface Reservation {
   id: string;
   customerId: string;
   facilityId: string;
+  facilityName: string;
   startAt: string;
   endAt: string;
   status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
@@ -230,6 +231,7 @@ export class ReservationService {
       id: data.id,
       customerId: data.customer_id,
       facilityId: data.facility_id,
+      facilityName: '',
       startAt: data.start_at,
       endAt: data.end_at,
       status: data.status,
@@ -343,7 +345,19 @@ export class ReservationService {
 
     const { data, error } = await this.supabase
       .from('reservations')
-      .select('id, customer_id, facility_id, start_at, end_at, status')
+      .select(
+        `
+    id,
+    customer_id,
+    facility_id,
+    start_at,
+    end_at,
+    status,
+    facilities (
+      name
+    )
+  `,
+      )
       .eq('customer_id', user.id)
       .order('start_at', { ascending: true });
 
@@ -351,14 +365,19 @@ export class ReservationService {
       throw error;
     }
 
-    return (data ?? []).map((reservation) => ({
-      id: reservation.id,
-      customerId: reservation.customer_id,
-      facilityId: reservation.facility_id,
-      startAt: reservation.start_at,
-      endAt: reservation.end_at,
-      status: reservation.status,
-    }));
+    return (data ?? []).map((reservation) => {
+      const facility = reservation.facilities as unknown as { name: string } | null;
+
+      return {
+        id: reservation.id,
+        customerId: reservation.customer_id,
+        facilityId: reservation.facility_id,
+        facilityName: facility?.name ?? 'Instalación no disponible',
+        startAt: reservation.start_at,
+        endAt: reservation.end_at,
+        status: reservation.status,
+      };
+    });
   }
 
   async cancelMyReservation(reservationId: string): Promise<void> {
