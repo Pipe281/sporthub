@@ -15,6 +15,24 @@ export class ReservationsComponent implements OnInit {
   readonly reservations = signal<Reservation[]>([]);
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
+  readonly statusConfig = {
+    PENDING: {
+      label: 'Pendiente',
+      classes: 'bg-yellow-500/10 text-yellow-400',
+    },
+    CONFIRMED: {
+      label: 'Confirmada',
+      classes: 'bg-[#9FEA00]/10 text-[#9FEA00]',
+    },
+    CANCELLED: {
+      label: 'Cancelada',
+      classes: 'bg-red-500/10 text-red-400',
+    },
+    COMPLETED: {
+      label: 'Completada',
+      classes: 'bg-blue-500/10 text-blue-400',
+    },
+  } as const;
 
   ngOnInit(): void {
     this.loadReservations();
