@@ -249,10 +249,30 @@
           </p>
 
           <div class="mt-6 rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
-            <div class="mb-5 text-center">
+            <div class="mb-5 flex items-center justify-between gap-3">
+              <button
+                type="button"
+                (click)="goToPreviousMonth()"
+                [disabled]="!canGoPreviousMonth()"
+                aria-label="Mes anterior"
+                class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-lg text-zinc-300 transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:text-zinc-700"
+              >
+                ‹
+              </button>
+
               <h4 class="text-lg font-semibold text-white">
                 {{ currentMonth() | date: 'MMMM yyyy' : '' : 'es' }}
               </h4>
+
+              <button
+                type="button"
+                (click)="goToNextMonth()"
+                [disabled]="!canGoNextMonth()"
+                aria-label="Mes siguiente"
+                class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-lg text-zinc-300 transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:text-zinc-700"
+              >
+                ›
+              </button>
             </div>
 
             <div class="grid grid-cols-7 gap-2">

@@ -143,6 +143,45 @@ export class ReservationFormModalComponent implements OnInit {
     this.currentStep.set(1);
   }
 
+  goToPreviousMonth(): void {
+    if (!this.canGoPreviousMonth()) {
+      return;
+    }
+
+    const month = this.currentMonth();
+    this.currentMonth.set(new Date(month.getFullYear(), month.getMonth() - 1, 1));
+  }
+
+  goToNextMonth(): void {
+    if (!this.canGoNextMonth()) {
+      return;
+    }
+
+    const month = this.currentMonth();
+    this.currentMonth.set(new Date(month.getFullYear(), month.getMonth() + 1, 1));
+  }
+
+  canGoPreviousMonth(): boolean {
+    const today = new Date();
+    const month = this.currentMonth();
+
+    return (
+      month.getFullYear() > today.getFullYear() ||
+      (month.getFullYear() === today.getFullYear() && month.getMonth() > today.getMonth())
+    );
+  }
+
+  canGoNextMonth(): boolean {
+    const today = new Date();
+    const month = this.currentMonth();
+    const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+
+    return (
+      month.getFullYear() < nextMonth.getFullYear() ||
+      (month.getFullYear() === nextMonth.getFullYear() && month.getMonth() < nextMonth.getMonth())
+    );
+  }
+
   goToTimeStep(): void {
     this.reservationError.set(
       'El horario seleccionado ya no está disponible. Por favor, selecciona otro horario.',
@@ -205,12 +244,17 @@ export class ReservationFormModalComponent implements OnInit {
     } catch (error: unknown) {
       console.error('Error al crear la reserva:', error);
 
-      if (
-        error instanceof Error &&
-        error.message.includes('RESERVATION_TIME_IS_NO_LONGER_AVAILABLE')
-      ) {
+      const errorMessage = this.getErrorMessage(error);
+
+      if (errorMessage.includes('RESERVATION_TIME_IS_NO_LONGER_AVAILABLE')) {
         this.reservationError.set(
           'El horario seleccionado ya no está disponible. Por favor, selecciona otro horario.',
+        );
+
+        this.currentStep.set(3);
+      } else if (errorMessage.includes('RESERVATION_OUTSIDE_OPERATING_HOURS')) {
+        this.reservationError.set(
+          'El horario seleccionado está fuera del horario de funcionamiento. Por favor, selecciona otro horario.',
         );
 
         this.currentStep.set(3);
@@ -272,5 +316,17 @@ export class ReservationFormModalComponent implements OnInit {
   goToMyReservations(): void {
     this.close();
     void this.router.navigateByUrl(CUSTOMER_ROUTES.RESERVATIONS);
+  }
+
+  private getErrorMessage(error: unknown): string {
+    if (error instanceof Error) {
+      return error.message;
+    }
+
+    if (typeof error === 'object' && error !== null && 'message' in error) {
+      return String(error.message);
+    }
+
+    return String(error);
   }
 }
