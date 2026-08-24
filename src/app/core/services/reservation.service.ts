@@ -47,11 +47,14 @@ export interface Reservation {
   providedIn: 'root',
 })
 export class ReservationService {
+  private readonly businessTimeZone = 'America/Santiago';
   private readonly supabaseService = inject(SupabaseService);
   private readonly supabase = this.supabaseService.getClient();
 
   async getOperatingHours(date: Date): Promise<OperatingHours | null> {
-    const dayOfWeek = date.getDay();
+    const dayOfWeek = new Date(
+      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+    ).getUTCDay();
 
     const { data, error } = await this.supabase
       .from('operating_hours')
@@ -166,10 +169,8 @@ export class ReservationService {
       durationHours,
     );
 
-    const formattedDate = this.formatDate(date);
-
-    const startAt = `${formattedDate}T${operatingHours.opensAt}`;
-    const endAt = `${formattedDate}T${operatingHours.closesAt}`;
+    const startAt = this.toBusinessTimeIso(date, operatingHours.opensAt);
+    const endAt = this.toBusinessTimeIso(date, operatingHours.closesAt);
 
     // 4. Obtener reservas existentes
     const reservations = await this.getFacilityAvailability(facilityId, startAt, endAt);
@@ -196,26 +197,8 @@ export class ReservationService {
 
     const [endHour, endMinute] = timeSlot.endAt.split(':').map(Number);
 
-    const startDate = new Date(
-      date.getFullYear(),
-      date.getMonth(),
-      date.getDate(),
-      startHour,
-      startMinute,
-      0,
-    );
-
-    const endDate = new Date(
-      date.getFullYear(),
-      date.getMonth(),
-      date.getDate(),
-      endHour,
-      endMinute,
-      0,
-    );
-
-    const startAt = startDate.toISOString();
-    const endAt = endDate.toISOString();
+    const startAt = this.toBusinessTimeIso(date, `${startHour}:${startMinute}`);
+    const endAt = this.toBusinessTimeIso(date, `${endHour}:${endMinute}`);
 
     const { data, error } = await this.supabase.rpc('create_reservation', {
       p_facility_id: facilityId,
@@ -281,44 +264,50 @@ export class ReservationService {
   private filterPastSlots(slots: TimeSlot[], date: Date): TimeSlot[] {
     const now = new Date();
 
-    const isToday =
-      date.getFullYear() === now.getFullYear() &&
-      date.getMonth() === now.getMonth() &&
-      date.getDate() === now.getDate();
-
-    if (!isToday) {
-      return slots;
-    }
-
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
-    return slots.filter((slot) => {
-      const [hour, minute] = slot.startAt.split(':').map(Number);
-
-      const slotStartMinutes = hour * 60 + minute;
-
-      return slotStartMinutes > currentMinutes;
-    });
+    return slots.filter((slot) => this.toBusinessTimeIso(date, slot.startAt) > now.toISOString());
   }
 
   private extractTime(dateTime: string): string {
-    const date = new Date(dateTime);
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: this.businessTimeZone,
+      hour: '2-digit',
+      minute: '2-digit',
+      hourCycle: 'h23',
+    }).formatToParts(new Date(dateTime));
 
-    const hours = date.getHours().toString().padStart(2, '0');
+    const hour = parts.find((part) => part.type === 'hour')?.value ?? '00';
+    const minute = parts.find((part) => part.type === 'minute')?.value ?? '00';
 
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-
-    return `${hours}:${minutes}`;
+    return `${hour}:${minute}`;
   }
 
-  private formatDate(date: Date): string {
-    const year = date.getFullYear();
+  private toBusinessTimeIso(date: Date, time: string): string {
+    const [hour, minute] = time.split(':').map(Number);
+    const candidate = new Date(
+      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), hour, minute, 0),
+    );
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: this.businessTimeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hourCycle: 'h23',
+    }).formatToParts(candidate);
+    const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+    const displayedAsUtc = Date.UTC(
+      Number(values['year']),
+      Number(values['month']) - 1,
+      Number(values['day']),
+      Number(values['hour']),
+      Number(values['minute']),
+      Number(values['second']),
+    );
+    const offset = displayedAsUtc - candidate.getTime();
 
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-
-    const day = date.getDate().toString().padStart(2, '0');
-
-    return `${year}-${month}-${day}`;
+    return new Date(candidate.getTime() - offset).toISOString();
   }
 
   private minutesToTime(totalMinutes: number): string {
