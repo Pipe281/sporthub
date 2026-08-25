@@ -240,6 +240,9 @@ export class ReservationFormModalComponent implements OnInit {
 
       await this.reservationService.createReservation(this.facilityId(), date, timeSlot);
 
+      // Keep the slot list current if the user goes back from the confirmation step.
+      await this.loadTimeSlots(date);
+
       this.reservationSuccess.set(true);
     } catch (error: unknown) {
       console.error('Error al crear la reserva:', error);
