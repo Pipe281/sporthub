@@ -16,6 +16,7 @@ import { AdminFacilitiesComponent } from './features/admin/pages/admin-facilitie
 import { AdminFacilityTypesComponent } from './features/admin/pages/admin-facility-types/admin-facility-types.component';
 import { AdminClientsComponent } from './features/admin/pages/admin-clients.component/admin-clients.component';
 import { ReservationsComponent } from './features/customer/pages/reservations/reservations.component';
+import { AdminReservationsComponent } from './features/admin/pages/admin-reservations/admin-reservations.component';
 
 export const routes: Routes = [
   {
@@ -80,6 +81,11 @@ export const routes: Routes = [
   {
     path: 'admin/clients',
     component: AdminClientsComponent,
+    canActivate: [authGuard, adminGuard],
+  },
+  {
+    path: 'admin/schedules',
+    component: AdminReservationsComponent,
     canActivate: [authGuard, adminGuard],
   },
   {
