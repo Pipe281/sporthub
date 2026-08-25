@@ -71,7 +71,7 @@ export class HeaderComponent {
       route: ADMIN_ROUTES.FACILITIES,
     },
     {
-      label: 'Calendario',
+      label: 'Reservas',
       route: ADMIN_ROUTES.SCHEDULES,
     },
     {

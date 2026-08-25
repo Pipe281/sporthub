@@ -43,6 +43,11 @@ export interface Reservation {
   status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
 }
 
+export interface AdminReservation extends Reservation {
+  customerName: string;
+  customerEmail: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -371,6 +376,80 @@ export class ReservationService {
 
   async cancelMyReservation(reservationId: string): Promise<void> {
     const { error } = await this.supabase.rpc('cancel_my_reservation', {
+      p_reservation_id: reservationId,
+    });
+
+    if (error) {
+      throw error;
+    }
+  }
+
+  async getAllReservations(): Promise<AdminReservation[]> {
+    const { data, error } = await this.supabase
+      .from('reservations')
+      .select(
+        `
+        id,
+        customer_id,
+        facility_id,
+        start_at,
+        end_at,
+        status,
+        facilities (
+          name
+        )
+      `,
+      )
+      .order('start_at', { ascending: false });
+
+    if (error) {
+      throw error;
+    }
+
+    const reservations = data ?? [];
+    const customerIds = [...new Set(reservations.map((reservation) => reservation.customer_id))];
+
+    const { data: customers, error: customersError } = customerIds.length
+      ? await this.supabase
+          .from('customer_profiles')
+          .select('id, first_name, last_name, email')
+          .in('id', customerIds)
+      : { data: [], error: null };
+
+    if (customersError) {
+      throw customersError;
+    }
+
+    const customerById = new Map(
+      (customers ?? []).map((customer) => [
+        customer.id,
+        {
+          name: [customer.first_name, customer.last_name].filter(Boolean).join(' '),
+          email: customer.email ?? '',
+        },
+      ]),
+    );
+
+    return reservations.map((reservation) => {
+      const facility = reservation.facilities as unknown as { name: string } | null;
+      const customer = customerById.get(reservation.customer_id);
+
+      return {
+        id: reservation.id,
+        customerId: reservation.customer_id,
+        customerName: customer?.name || 'Cliente no disponible',
+        customerEmail: customer?.email || 'Correo no disponible',
+        facilityId: reservation.facility_id,
+        facilityName: facility?.name ?? 'Instalación no disponible',
+        startAt: reservation.start_at,
+        endAt: reservation.end_at,
+        status: reservation.status,
+      };
+    });
+  }
+
+  async cancelReservationAsAdmin(reservationId: string): Promise<void> {
+    const { error } = await this.supabase.rpc('cancel_reservation_as_admin', {
       p_reservation_id: reservationId,
     });
 
