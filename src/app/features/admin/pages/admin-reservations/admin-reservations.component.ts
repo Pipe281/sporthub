@@ -22,6 +22,9 @@ export class AdminReservationsComponent implements OnInit {
   readonly error = signal<string | null>(null);
   readonly searchTerm = signal('');
   readonly selectedStatus = signal<AdminReservation['status'] | 'ALL'>('ALL');
+  readonly selectedFacility = signal('ALL');
+  readonly viewMode = signal<'list' | 'calendar'>('list');
+  readonly calendarDate = signal(this.startOfMonth(new Date()));
   readonly currentPage = signal(1);
   readonly selectedReservation = signal<AdminReservation | null>(null);
   readonly reservationToCancel = signal<AdminReservation | null>(null);
@@ -30,13 +33,21 @@ export class AdminReservationsComponent implements OnInit {
   readonly currentTime = signal(Date.now());
   readonly pageSize = 25;
 
+  readonly facilityOptions = computed(() =>
+    [...new Set(this.reservations().map((reservation) => reservation.facilityName))].sort((a, b) =>
+      a.localeCompare(b),
+    ),
+  );
+
   readonly filteredReservations = computed(() => {
     const term = this.searchTerm().trim().toLowerCase();
     const selectedStatus = this.selectedStatus();
+    const selectedFacility = this.selectedFacility();
 
     return this.reservations().filter(
       (reservation) =>
         (selectedStatus === 'ALL' || reservation.status === selectedStatus) &&
+        (selectedFacility === 'ALL' || reservation.facilityName === selectedFacility) &&
         (!term ||
           [reservation.customerName, reservation.customerEmail, reservation.facilityName]
             .join(' ')
@@ -44,6 +55,45 @@ export class AdminReservationsComponent implements OnInit {
             .includes(term)),
     );
   });
+
+  readonly monthLabel = computed(() =>
+    new Intl.DateTimeFormat('es-CL', {
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'America/Santiago',
+    }).format(this.calendarDate()),
+  );
+
+  readonly calendarDays = computed(() => {
+    const month = this.calendarDate();
+    const firstDay = this.startOfMonth(month);
+    const firstWeekday = (firstDay.getDay() + 6) % 7;
+    const daysInMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
+    const totalDays = Math.ceil((firstWeekday + daysInMonth) / 7) * 7;
+    const today = this.toDateKey(new Date());
+
+    return Array.from({ length: totalDays }, (_, index) => {
+      const date = new Date(month.getFullYear(), month.getMonth(), index - firstWeekday + 1);
+
+      return {
+        date,
+        key: this.toDateKey(date),
+        day: date.getDate(),
+        isCurrentMonth: date.getMonth() === month.getMonth(),
+        isToday: this.toDateKey(date) === today,
+      };
+    });
+  });
+
+  readonly selectedDateReservations = computed(() => {
+    const selectedDate = this.selectedDate();
+
+    return this.filteredReservations()
+      .filter((reservation) => this.toDateKey(new Date(reservation.startAt)) === selectedDate)
+      .sort((a, b) => a.startAt.localeCompare(b.startAt));
+  });
+
+  readonly selectedDate = signal(this.toDateKey(new Date()));
 
   readonly totalPages = computed(() =>
     Math.max(1, Math.ceil(this.filteredReservations().length / this.pageSize)),
@@ -91,6 +141,41 @@ export class AdminReservationsComponent implements OnInit {
       (event.target as HTMLSelectElement).value as AdminReservation['status'] | 'ALL',
     );
     this.currentPage.set(1);
+  }
+
+  onFacilityChange(event: Event): void {
+    this.selectedFacility.set((event.target as HTMLSelectElement).value);
+    this.currentPage.set(1);
+  }
+
+  setViewMode(viewMode: 'list' | 'calendar'): void {
+    this.viewMode.set(viewMode);
+  }
+
+  goToPreviousMonth(): void {
+    const date = this.calendarDate();
+    this.calendarDate.set(new Date(date.getFullYear(), date.getMonth() - 1, 1));
+  }
+
+  goToNextMonth(): void {
+    const date = this.calendarDate();
+    this.calendarDate.set(new Date(date.getFullYear(), date.getMonth() + 1, 1));
+  }
+
+  goToCurrentMonth(): void {
+    const today = new Date();
+    this.calendarDate.set(this.startOfMonth(today));
+    this.selectedDate.set(this.toDateKey(today));
+  }
+
+  selectCalendarDate(dateKey: string): void {
+    this.selectedDate.set(dateKey);
+  }
+
+  getReservationsForDate(dateKey: string): AdminReservation[] {
+    return this.filteredReservations()
+      .filter((reservation) => this.toDateKey(new Date(reservation.startAt)) === dateKey)
+      .sort((a, b) => a.startAt.localeCompare(b.startAt));
   }
 
   goToPreviousPage(): void {
@@ -157,5 +242,18 @@ export class AdminReservationsComponent implements OnInit {
     } finally {
       this.cancellingReservationId.set(null);
     }
+  }
+
+  private startOfMonth(date: Date): Date {
+    return new Date(date.getFullYear(), date.getMonth(), 1);
+  }
+
+  private toDateKey(date: Date): string {
+    return new Intl.DateTimeFormat('en-CA', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      timeZone: 'America/Santiago',
+    }).format(date);
   }
 }

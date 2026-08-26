@@ -17,7 +17,7 @@ export const ADMIN_ROUTES = {
   FACILITIES: '/admin/facilities',
   CREATE_FACILITY: '/admin/facilities/create',
   FACILITY_TYPES: '/admin/facility-types',
-  SCHEDULES: '/admin/schedules',
+  RESERVATIONS: '/admin/reservations',
   CLIENTS: '/admin/clients',
   PROFILE: '/profile',
 } as const;
