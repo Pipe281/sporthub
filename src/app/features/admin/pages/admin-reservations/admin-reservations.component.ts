@@ -21,25 +21,38 @@ export class AdminReservationsComponent implements OnInit {
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
   readonly searchTerm = signal('');
+  readonly selectedStatus = signal<AdminReservation['status'] | 'ALL'>('ALL');
+  readonly currentPage = signal(1);
   readonly selectedReservation = signal<AdminReservation | null>(null);
   readonly reservationToCancel = signal<AdminReservation | null>(null);
   readonly cancellingReservationId = signal<string | null>(null);
   readonly cancellationError = signal<string | null>(null);
   readonly currentTime = signal(Date.now());
+  readonly pageSize = 25;
 
   readonly filteredReservations = computed(() => {
     const term = this.searchTerm().trim().toLowerCase();
+    const selectedStatus = this.selectedStatus();
 
-    if (!term) {
-      return this.reservations();
-    }
-
-    return this.reservations().filter((reservation) =>
-      [reservation.customerName, reservation.customerEmail, reservation.facilityName]
-        .join(' ')
-        .toLowerCase()
-        .includes(term),
+    return this.reservations().filter(
+      (reservation) =>
+        (selectedStatus === 'ALL' || reservation.status === selectedStatus) &&
+        (!term ||
+          [reservation.customerName, reservation.customerEmail, reservation.facilityName]
+            .join(' ')
+            .toLowerCase()
+            .includes(term)),
     );
+  });
+
+  readonly totalPages = computed(() =>
+    Math.max(1, Math.ceil(this.filteredReservations().length / this.pageSize)),
+  );
+
+  readonly displayedReservations = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize;
+
+    return this.filteredReservations().slice(start, start + this.pageSize);
   });
 
   readonly statusConfig = {
@@ -59,6 +72,7 @@ export class AdminReservationsComponent implements OnInit {
 
     try {
       this.reservations.set(await this.reservationService.getAllReservations());
+      this.currentPage.set(1);
     } catch (error) {
       console.error('Error al cargar las reservas administrativas:', error);
       this.error.set('No fue posible cargar las reservas. Intenta nuevamente.');
@@ -69,21 +83,26 @@ export class AdminReservationsComponent implements OnInit {
 
   onSearch(event: Event): void {
     this.searchTerm.set((event.target as HTMLInputElement).value);
+    this.currentPage.set(1);
   }
 
-  getDisplayStatus(reservation: AdminReservation): AdminReservation['status'] {
-    if (
-      reservation.status === 'CONFIRMED' &&
-      new Date(reservation.endAt).getTime() <= this.currentTime()
-    ) {
-      return 'COMPLETED';
-    }
+  onStatusChange(event: Event): void {
+    this.selectedStatus.set(
+      (event.target as HTMLSelectElement).value as AdminReservation['status'] | 'ALL',
+    );
+    this.currentPage.set(1);
+  }
 
-    return reservation.status;
+  goToPreviousPage(): void {
+    this.currentPage.update((page) => Math.max(1, page - 1));
+  }
+
+  goToNextPage(): void {
+    this.currentPage.update((page) => Math.min(this.totalPages(), page + 1));
   }
 
   canCancel(reservation: AdminReservation): boolean {
-    const status = this.getDisplayStatus(reservation);
+    const status = reservation.status;
 
     return status === 'PENDING' || status === 'CONFIRMED';
   }
@@ -129,6 +148,7 @@ export class AdminReservationsComponent implements OnInit {
           item.id === reservation.id ? { ...item, status: 'CANCELLED' as const } : item,
         ),
       );
+      this.currentPage.update((page) => Math.min(page, this.totalPages()));
       this.reservationToCancel.set(null);
       this.notificationService.success('La reserva fue cancelada correctamente.');
     } catch (error) {
