@@ -72,7 +72,7 @@ export class HeaderComponent {
     },
     {
       label: 'Reservas',
-      route: ADMIN_ROUTES.SCHEDULES,
+      route: ADMIN_ROUTES.RESERVATIONS,
     },
     {
       label: 'Tipos',
