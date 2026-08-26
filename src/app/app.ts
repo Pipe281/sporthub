@@ -14,12 +14,10 @@ import { PUBLIC_AUTH_ROUTES } from './core/constants/app-routes.constants';
   styleUrl: './app.scss',
 })
 export class App implements OnInit {
-  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly navigationService = inject(NavigationService);
 
   ngOnInit(): void {
-    void this.authService.initializeAuth();
     this.router.events
       .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
       .subscribe((event) => {

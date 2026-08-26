@@ -1,0 +1,157 @@
+<section class="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+  <div class="mb-8">
+    <h1 class="text-2xl font-bold text-white sm:text-3xl">Mis reservas</h1>
+
+    <p class="mt-2 text-sm text-zinc-400">Revisa y administra tus reservas.</p>
+  </div>
+
+  @if (loading()) {
+    <div class="rounded-2xl border border-zinc-800 bg-zinc-900 p-8 text-center">
+      <p class="text-zinc-400">Cargando reservas...</p>
+    </div>
+  } @else if (error()) {
+    <div class="rounded-2xl border border-red-900/50 bg-red-950/30 p-6 text-center">
+      <p class="text-red-400">
+        {{ error() }}
+      </p>
+
+      <button
+        type="button"
+        (click)="loadReservations()"
+        class="mt-4 cursor-pointer rounded-xl bg-[#9FEA00] px-4 py-2 text-sm font-bold text-zinc-950 transition hover:brightness-110"
+      >
+        Reintentar
+      </button>
+    </div>
+  } @else if (reservations().length === 0) {
+    <div class="rounded-2xl border border-zinc-800 bg-zinc-900 p-8 text-center">
+      <p class="text-lg font-semibold text-white">No tienes reservas</p>
+
+      <p class="mt-2 text-sm text-zinc-400">Cuando realices una reserva, aparecerá aquí.</p>
+    </div>
+  } @else {
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      @for (reservation of reservations(); track reservation.id) {
+        <article
+          class="rounded-2xl border border-zinc-800 bg-zinc-900 p-5 transition hover:border-zinc-700"
+        >
+          <div class="flex items-start justify-between gap-4">
+            <div class="min-w-0">
+              <p class="text-xs font-medium tracking-wide text-zinc-500 uppercase">Instalación</p>
+
+              <p class="mt-1 text-lg font-semibold text-white">
+                {{ reservation.facilityName }}
+              </p>
+            </div>
+
+            <span
+              [class]="
+                'rounded-full px-3 py-1 text-xs font-semibold ' +
+                statusConfig[getDisplayStatus(reservation)].classes
+              "
+            >
+              {{ statusConfig[getDisplayStatus(reservation)].label }}
+            </span>
+          </div>
+
+          <div class="mt-5 border-t border-zinc-800 pt-4">
+            <p class="text-xs text-zinc-500">Fecha</p>
+
+            <p class="mt-1 text-sm font-medium text-white">
+              {{ reservation.startAt | date: 'fullDate' : 'America/Santiago' : 'es' }}
+            </p>
+          </div>
+
+          <div class="mt-5 border-t border-zinc-800 pt-4">
+            <p class="text-xs text-zinc-500">Horario</p>
+
+            <p class="mt-1 font-medium text-[#9FEA00]">
+              {{ reservation.startAt | date: 'HH:mm' : 'America/Santiago' }}
+              -
+              {{ reservation.endAt | date: 'HH:mm' : 'America/Santiago' }}
+            </p>
+          </div>
+
+          @if (getDisplayStatus(reservation) === 'CONFIRMED') {
+            @if (canCancel(reservation)) {
+              <button
+                type="button"
+                (click)="requestCancellation(reservation)"
+                [disabled]="cancellingReservationId() === reservation.id"
+                class="mt-5 w-full cursor-pointer rounded-xl border border-red-500/40 px-4 py-2 text-sm font-semibold text-red-300 transition hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Cancelar reserva
+              </button>
+            } @else {
+              <p class="mt-5 border-t border-zinc-800 pt-4 text-xs text-zinc-500">
+                Ya no puedes cancelar esta reserva: faltan menos de 2 horas para su inicio.
+              </p>
+            }
+          }
+        </article>
+      }
+    </div>
+
+    @if (cancellationSuccess()) {
+      <div
+        class="mt-6 rounded-xl border border-[#9FEA00]/30 bg-[#9FEA00]/10 p-4 text-sm text-[#c8ff75]"
+        role="status"
+      >
+        {{ cancellationSuccess() }}
+      </div>
+    }
+  }
+</section>
+
+@if (reservationToCancel(); as reservation) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
+    role="presentation"
+  >
+    <div
+      class="w-full max-w-md rounded-2xl border border-zinc-700 bg-zinc-900 p-6 shadow-2xl"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="cancel-reservation-title"
+    >
+      <h2 id="cancel-reservation-title" class="text-lg font-semibold text-white">
+        ¿Cancelar reserva?
+      </h2>
+
+      <p class="mt-3 text-sm text-zinc-300">
+        Se liberará el horario de {{ reservation.facilityName }}. Esta acción conservará la reserva
+        como historial y cambiará su estado a cancelada.
+      </p>
+
+      @if (cancellationError()) {
+        <p class="mt-4 rounded-lg bg-red-950/40 p-3 text-sm text-red-300" role="alert">
+          {{ cancellationError() }}
+        </p>
+      }
+
+      <div class="mt-6 flex justify-end gap-3">
+        <button
+          type="button"
+          (click)="dismissCancellation()"
+          [disabled]="cancellingReservationId() === reservation.id"
+          class="cursor-pointer rounded-xl border border-zinc-700 px-4 py-2 text-sm font-semibold text-zinc-300 transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Volver
+        </button>
+
+        <button
+          type="button"
+          (click)="confirmCancellation()"
+          [disabled]="cancellingReservationId() === reservation.id"
+          class="cursor-pointer rounded-xl bg-red-500 px-4 py-2 text-sm font-bold text-white transition hover:bg-red-400 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          @if (cancellingReservationId() === reservation.id) {
+            Cancelando...
+          } @else {
+            Confirmar cancelación
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -66,9 +66,7 @@ export class ProfileComponent implements OnInit {
   }
 
   private async loadProfile(): Promise<void> {
-    await this.profileService.loadProfile();
-    console.log('aqui viene el profile');
-    console.log(this.profile());
+    await this.profileService.getProfile();
 
     this.patchForm();
   }
