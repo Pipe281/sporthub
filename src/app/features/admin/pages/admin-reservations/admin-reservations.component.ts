@@ -5,6 +5,7 @@ import {
   AdminReservation,
   ReservationService,
 } from '../../../../core/services/reservation.service';
+import { Facility, FacilityService } from '../../../../core/services/facility.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
@@ -15,9 +16,11 @@ import { NotificationService } from '../../../../core/services/notification.serv
 })
 export class AdminReservationsComponent implements OnInit {
   private readonly reservationService = inject(ReservationService);
+  private readonly facilityService = inject(FacilityService);
   private readonly notificationService = inject(NotificationService);
 
   readonly reservations = signal<AdminReservation[]>([]);
+  readonly facilities = signal<Facility[]>([]);
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
   readonly searchTerm = signal('');
@@ -34,10 +37,16 @@ export class AdminReservationsComponent implements OnInit {
   readonly pageSize = 25;
 
   readonly facilityOptions = computed(() =>
-    [...new Set(this.reservations().map((reservation) => reservation.facilityName))].sort((a, b) =>
-      a.localeCompare(b),
-    ),
+    [...this.facilities()].sort((a, b) => a.name.localeCompare(b.name)),
   );
+
+  readonly selectedFacilityName = computed(() => {
+    const selectedFacility = this.selectedFacility();
+
+    return selectedFacility === 'ALL'
+      ? null
+      : (this.facilities().find((facility) => facility.id === selectedFacility)?.name ?? null);
+  });
 
   readonly filteredReservations = computed(() => {
     const term = this.searchTerm().trim().toLowerCase();
@@ -47,7 +56,7 @@ export class AdminReservationsComponent implements OnInit {
     return this.reservations().filter(
       (reservation) =>
         (selectedStatus === 'ALL' || reservation.status === selectedStatus) &&
-        (selectedFacility === 'ALL' || reservation.facilityName === selectedFacility) &&
+        (selectedFacility === 'ALL' || reservation.facilityId === selectedFacility) &&
         (!term ||
           [reservation.customerName, reservation.customerEmail, reservation.facilityName]
             .join(' ')
@@ -121,7 +130,12 @@ export class AdminReservationsComponent implements OnInit {
     this.error.set(null);
 
     try {
-      this.reservations.set(await this.reservationService.getAllReservations());
+      const [reservations, facilities] = await Promise.all([
+        this.reservationService.getAllReservations(),
+        this.facilityService.getAllFacilities(),
+      ]);
+      this.reservations.set(reservations);
+      this.facilities.set(facilities);
       this.currentPage.set(1);
     } catch (error) {
       console.error('Error al cargar las reservas administrativas:', error);
@@ -145,6 +159,11 @@ export class AdminReservationsComponent implements OnInit {
 
   onFacilityChange(event: Event): void {
     this.selectedFacility.set((event.target as HTMLSelectElement).value);
+    this.currentPage.set(1);
+  }
+
+  clearFacilityFilter(): void {
+    this.selectedFacility.set('ALL');
     this.currentPage.set(1);
   }
 
