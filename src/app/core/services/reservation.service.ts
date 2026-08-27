@@ -56,6 +56,54 @@ export class ReservationService {
   private readonly supabaseService = inject(SupabaseService);
   private readonly supabase = this.supabaseService.getClient();
 
+  async getReservationCountForToday(): Promise<number> {
+    const { startAt, endAt } = this.getBusinessDateRange('day');
+    return this.getReservationCount(startAt, endAt);
+  }
+
+  async getReservationCountForCurrentMonth(): Promise<number> {
+    const { startAt, endAt } = this.getBusinessDateRange('month');
+    return this.getReservationCount(startAt, endAt);
+  }
+
+  private async getReservationCount(startAt: string, endAt: string): Promise<number> {
+    const { count, error } = await this.supabase
+      .from('reservations')
+      .select('id', { count: 'exact', head: true })
+      .gte('start_at', startAt)
+      .lt('start_at', endAt)
+      .in('status', ['PENDING', 'CONFIRMED', 'COMPLETED']);
+
+    if (error) {
+      throw error;
+    }
+
+    return count ?? 0;
+  }
+
+  private getBusinessDateRange(period: 'day' | 'month'): { startAt: string; endAt: string } {
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: this.businessTimeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).formatToParts(new Date());
+    const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+    const year = Number(values['year']);
+    const month = Number(values['month']) - 1;
+    const day = Number(values['day']);
+    const startDate = new Date(Date.UTC(year, month, period === 'month' ? 1 : day));
+    const endDate =
+      period === 'month'
+        ? new Date(Date.UTC(year, month + 1, 1))
+        : new Date(Date.UTC(year, month, day + 1));
+
+    return {
+      startAt: this.toBusinessTimeIso(startDate, '00:00'),
+      endAt: this.toBusinessTimeIso(endDate, '00:00'),
+    };
+  }
+
   async getOperatingHours(date: Date): Promise<OperatingHours | null> {
     const dayOfWeek = new Date(
       Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
