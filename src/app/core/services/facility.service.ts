@@ -32,6 +32,19 @@ export class FacilityService {
 
   private readonly supabase = this.supabaseService.getClient();
 
+  async getActiveFacilityCount(): Promise<number> {
+    const { count, error } = await this.supabase
+      .from('facilities')
+      .select('id', { count: 'exact', head: true })
+      .eq('status', 'ACTIVE');
+
+    if (error) {
+      throw error;
+    }
+
+    return count ?? 0;
+  }
+
   async getFacilities(): Promise<FacilityWithType[]> {
     const { data, error } = await this.supabase
       .from('facilities')
