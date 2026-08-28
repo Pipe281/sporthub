@@ -1,6 +1,7 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 
+import { NotificationService } from '../../../../core/services/notification.service';
 import { Reservation, ReservationService } from '../../../../core/services/reservation.service';
 
 @Component({
@@ -11,6 +12,7 @@ import { Reservation, ReservationService } from '../../../../core/services/reser
 })
 export class ReservationsComponent implements OnDestroy, OnInit {
   private readonly reservationService = inject(ReservationService);
+  private readonly notificationService = inject(NotificationService);
   private completionTimer: ReturnType<typeof setInterval> | undefined;
 
   readonly reservations = signal<Reservation[]>([]);
@@ -19,8 +21,32 @@ export class ReservationsComponent implements OnDestroy, OnInit {
   readonly cancellingReservationId = signal<string | null>(null);
   readonly reservationToCancel = signal<Reservation | null>(null);
   readonly cancellationError = signal<string | null>(null);
-  readonly cancellationSuccess = signal<string | null>(null);
   readonly currentTime = signal(Date.now());
+  readonly selectedStatus = signal<Reservation['status'] | 'ALL'>('ALL');
+  readonly cancelledExpanded = signal(false);
+
+  readonly filteredReservations = computed(() => {
+    const selectedStatus = this.selectedStatus();
+
+    return this.reservations().filter(
+      (reservation) =>
+        selectedStatus === 'ALL' || reservation.status === selectedStatus,
+    );
+  });
+
+  readonly activeReservations = computed(() =>
+    this.filteredReservations().filter(
+      (reservation) => reservation.status !== 'CANCELLED',
+    ),
+  );
+
+  readonly cancelledReservations = computed(() =>
+    this.filteredReservations().filter(
+      (reservation) => reservation.status === 'CANCELLED',
+    ),
+  );
+
+  readonly displayedReservations = this.activeReservations;
   readonly statusConfig = {
     PENDING: {
       label: 'Pendiente',
@@ -51,6 +77,20 @@ export class ReservationsComponent implements OnDestroy, OnInit {
     }
   }
 
+  onStatusChange(event: Event): void {
+    const status = (event.target as HTMLSelectElement).value as Reservation['status'] | 'ALL';
+
+    this.selectedStatus.set(status);
+
+    if (status === 'CANCELLED') {
+      this.cancelledExpanded.set(true);
+    }
+  }
+
+  toggleCancelledReservations(): void {
+    this.cancelledExpanded.update((expanded) => !expanded);
+  }
+
   async loadReservations(): Promise<void> {
     this.loading.set(true);
     this.error.set(null);
@@ -70,20 +110,9 @@ export class ReservationsComponent implements OnDestroy, OnInit {
 
   canCancel(reservation: Reservation): boolean {
     return (
-      this.getDisplayStatus(reservation) === 'CONFIRMED' &&
+      reservation.status === 'CONFIRMED' &&
       this.getCancellationDeadline(reservation).getTime() >= this.currentTime()
     );
-  }
-
-  getDisplayStatus(reservation: Reservation): Reservation['status'] {
-    if (
-      reservation.status === 'CONFIRMED' &&
-      new Date(reservation.endAt).getTime() <= this.currentTime()
-    ) {
-      return 'COMPLETED';
-    }
-
-    return reservation.status;
   }
 
   getCancellationDeadline(reservation: Reservation): Date {
@@ -96,7 +125,6 @@ export class ReservationsComponent implements OnDestroy, OnInit {
     }
 
     this.cancellationError.set(null);
-    this.cancellationSuccess.set(null);
     this.reservationToCancel.set(reservation);
   }
 
@@ -128,7 +156,7 @@ export class ReservationsComponent implements OnDestroy, OnInit {
         ),
       );
       this.reservationToCancel.set(null);
-      this.cancellationSuccess.set('La reserva fue cancelada correctamente.');
+      this.notificationService.success('La reserva fue cancelada correctamente.');
     } catch (error) {
       console.error('Error al cancelar la reserva:', error);
       this.cancellationError.set(this.mapCancellationError(error));

@@ -20,6 +20,19 @@ export class CustomerService {
 
   private readonly supabase = this.supabaseService.getClient();
 
+  async getCustomerCount(): Promise<number> {
+    const { count, error } = await this.supabase
+      .from('customer_profiles')
+      .select('id', { count: 'exact', head: true })
+      .eq('role', 'CUSTOMER');
+
+    if (error) {
+      throw error;
+    }
+
+    return count ?? 0;
+  }
+
   async getCustomers(): Promise<Customer[]> {
     const { data, error } = await this.supabase
       .from('customer_profiles')

@@ -44,6 +44,7 @@ export interface Reservation {
 }
 
 export interface AdminReservation extends Reservation {
+  createdAt: string;
   customerName: string;
   customerEmail: string;
 }
@@ -55,6 +56,54 @@ export class ReservationService {
   private readonly businessTimeZone = 'America/Santiago';
   private readonly supabaseService = inject(SupabaseService);
   private readonly supabase = this.supabaseService.getClient();
+
+  async getReservationCountForToday(): Promise<number> {
+    const { startAt, endAt } = this.getBusinessDateRange('day');
+    return this.getReservationCount(startAt, endAt);
+  }
+
+  async getReservationCountForCurrentMonth(): Promise<number> {
+    const { startAt, endAt } = this.getBusinessDateRange('month');
+    return this.getReservationCount(startAt, endAt);
+  }
+
+  private async getReservationCount(startAt: string, endAt: string): Promise<number> {
+    const { count, error } = await this.supabase
+      .from('reservations')
+      .select('id', { count: 'exact', head: true })
+      .gte('start_at', startAt)
+      .lt('start_at', endAt)
+      .in('status', ['PENDING', 'CONFIRMED', 'COMPLETED']);
+
+    if (error) {
+      throw error;
+    }
+
+    return count ?? 0;
+  }
+
+  private getBusinessDateRange(period: 'day' | 'month'): { startAt: string; endAt: string } {
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: this.businessTimeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).formatToParts(new Date());
+    const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+    const year = Number(values['year']);
+    const month = Number(values['month']) - 1;
+    const day = Number(values['day']);
+    const startDate = new Date(Date.UTC(year, month, period === 'month' ? 1 : day));
+    const endDate =
+      period === 'month'
+        ? new Date(Date.UTC(year, month + 1, 1))
+        : new Date(Date.UTC(year, month, day + 1));
+
+    return {
+      startAt: this.toBusinessTimeIso(startDate, '00:00'),
+      endAt: this.toBusinessTimeIso(endDate, '00:00'),
+    };
+  }
 
   async getOperatingHours(date: Date): Promise<OperatingHours | null> {
     const dayOfWeek = new Date(
@@ -384,12 +433,15 @@ export class ReservationService {
     }
   }
 
-  async getAllReservations(): Promise<AdminReservation[]> {
-    const { data, error } = await this.supabase
+  async getAllReservations(
+    options: { limit?: number; orderBy?: 'start_at' | 'created_at' } = {},
+  ): Promise<AdminReservation[]> {
+    let query = this.supabase
       .from('reservations')
       .select(
         `
         id,
+        created_at,
         customer_id,
         facility_id,
         start_at,
@@ -400,7 +452,13 @@ export class ReservationService {
         )
       `,
       )
-      .order('start_at', { ascending: false });
+      .order(options.orderBy ?? 'start_at', { ascending: false });
+
+    if (options.limit !== undefined) {
+      query = query.limit(options.limit);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       throw error;
@@ -436,6 +494,7 @@ export class ReservationService {
 
       return {
         id: reservation.id,
+        createdAt: reservation.created_at,
         customerId: reservation.customer_id,
         customerName: customer?.name || 'Cliente no disponible',
         customerEmail: customer?.email || 'Correo no disponible',
@@ -446,6 +505,10 @@ export class ReservationService {
         status: reservation.status,
       };
     });
+  }
+
+  async getRecentReservations(limit = 5): Promise<AdminReservation[]> {
+    return this.getAllReservations({ limit, orderBy: 'created_at' });
   }
 
   async cancelReservationAsAdmin(reservationId: string): Promise<void> {
