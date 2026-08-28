@@ -44,6 +44,7 @@ export interface Reservation {
 }
 
 export interface AdminReservation extends Reservation {
+  createdAt: string;
   customerName: string;
   customerEmail: string;
 }
@@ -432,12 +433,15 @@ export class ReservationService {
     }
   }
 
-  async getAllReservations(): Promise<AdminReservation[]> {
-    const { data, error } = await this.supabase
+  async getAllReservations(
+    options: { limit?: number; orderBy?: 'start_at' | 'created_at' } = {},
+  ): Promise<AdminReservation[]> {
+    let query = this.supabase
       .from('reservations')
       .select(
         `
         id,
+        created_at,
         customer_id,
         facility_id,
         start_at,
@@ -448,7 +452,13 @@ export class ReservationService {
         )
       `,
       )
-      .order('start_at', { ascending: false });
+      .order(options.orderBy ?? 'start_at', { ascending: false });
+
+    if (options.limit !== undefined) {
+      query = query.limit(options.limit);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       throw error;
@@ -484,6 +494,7 @@ export class ReservationService {
 
       return {
         id: reservation.id,
+        createdAt: reservation.created_at,
         customerId: reservation.customer_id,
         customerName: customer?.name || 'Cliente no disponible',
         customerEmail: customer?.email || 'Correo no disponible',
@@ -494,6 +505,10 @@ export class ReservationService {
         status: reservation.status,
       };
     });
+  }
+
+  async getRecentReservations(limit = 5): Promise<AdminReservation[]> {
+    return this.getAllReservations({ limit, orderBy: 'created_at' });
   }
 
   async cancelReservationAsAdmin(reservationId: string): Promise<void> {
