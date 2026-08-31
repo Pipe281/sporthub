@@ -3,6 +3,7 @@ import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterLink } from '@angular/router';
 
 import { AuthService } from '../../../../core/services/auth.service';
+import { SupabaseErrorMapper } from '../../../../core/services/supabase-error-mapper.service';
 import { NavigationService } from '../../../../core/services/navigation.service';
 import { ProfileService } from '../../../../core/services/profile.service';
 import { ButtonComponent } from '../../../../shared/ui/botton/button.component';
@@ -28,6 +29,7 @@ export class RegisterComponent {
   private readonly router = inject(Router);
   private readonly navigationService = inject(NavigationService);
   private readonly profileService = inject(ProfileService);
+  private readonly errorMapper = inject(SupabaseErrorMapper);
 
   readonly loading = signal(false);
   readonly errorMessage = signal('');
@@ -80,12 +82,9 @@ export class RegisterComponent {
       } else {
         await this.router.navigate(['/admin']);
       }
-    } catch (error: any) {
-      if (error.message?.toLowerCase().includes('already')) {
-        this.errorMessage.set('Ya existe una cuenta con este correo.');
-      } else {
-        this.errorMessage.set('No fue posible crear la cuenta.');
-      }
+    } catch (error: unknown) {
+      console.error('Error al registrar la cuenta:', error);
+      this.errorMessage.set(this.errorMapper.mapAuthError(error));
     } finally {
       this.loading.set(false);
     }

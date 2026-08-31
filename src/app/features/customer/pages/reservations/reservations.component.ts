@@ -2,7 +2,9 @@ import { DatePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 
 import { NotificationService } from '../../../../core/services/notification.service';
-import { Reservation, ReservationService } from '../../../../core/services/reservation.service';
+import { ReservationService } from '../../../../core/services/reservation.service';
+import { SupabaseErrorMapper } from '../../../../core/services/supabase-error-mapper.service';
+import type { Reservation } from '../../../../core/types/reservation.types';
 
 @Component({
   selector: 'app-reservations',
@@ -13,6 +15,7 @@ import { Reservation, ReservationService } from '../../../../core/services/reser
 export class ReservationsComponent implements OnDestroy, OnInit {
   private readonly reservationService = inject(ReservationService);
   private readonly notificationService = inject(NotificationService);
+  private readonly errorMapper = inject(SupabaseErrorMapper);
   private completionTimer: ReturnType<typeof setInterval> | undefined;
 
   readonly reservations = signal<Reservation[]>([]);
@@ -159,32 +162,9 @@ export class ReservationsComponent implements OnDestroy, OnInit {
       this.notificationService.success('La reserva fue cancelada correctamente.');
     } catch (error) {
       console.error('Error al cancelar la reserva:', error);
-      this.cancellationError.set(this.mapCancellationError(error));
+      this.cancellationError.set(this.errorMapper.mapReservationError(error));
     } finally {
       this.cancellingReservationId.set(null);
     }
-  }
-
-  private mapCancellationError(error: unknown): string {
-    const message = error instanceof Error ? error.message : String(error);
-    const normalizedMessage = message.toUpperCase();
-
-    if (
-      normalizedMessage.includes('CANCELLATION_TOO_LATE') ||
-      normalizedMessage.includes('TWO_HOURS') ||
-      normalizedMessage.includes('MINIMUM_CANCELLATION')
-    ) {
-      return 'La reserva ya no puede cancelarse porque faltan menos de 2 horas para su inicio.';
-    }
-
-    if (normalizedMessage.includes('NOT_CONFIRMED')) {
-      return 'Solo puedes cancelar reservas confirmadas.';
-    }
-
-    if (normalizedMessage.includes('NOT_FOUND') || normalizedMessage.includes('NOT_OWNER')) {
-      return 'No fue posible encontrar una reserva cancelable.';
-    }
-
-    return 'No fue posible cancelar la reserva. Inténtalo nuevamente.';
   }
 }

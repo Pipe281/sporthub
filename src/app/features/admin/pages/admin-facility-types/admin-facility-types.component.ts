@@ -3,6 +3,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { FacilityService, FacilityType } from '../../../../core/services/facility.service';
 import { FacilityTypeFormModalComponent } from '../../../../shared/ui/facility-type-form-modal.component/facility-type-form-modal.component';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { SupabaseErrorMapper } from '../../../../core/services/supabase-error-mapper.service';
 
 @Component({
   selector: 'app-admin-facility-types',
@@ -13,6 +14,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 export class AdminFacilityTypesComponent implements OnInit {
   private readonly facilityService = inject(FacilityService);
   private readonly notificationService = inject(NotificationService);
+  private readonly errorMapper = inject(SupabaseErrorMapper);
 
   readonly facilityTypes = signal<FacilityType[]>([]);
   readonly loading = signal(true);
@@ -70,9 +72,7 @@ export class AdminFacilityTypesComponent implements OnInit {
       this.closeDeleteModal();
     } catch (error) {
       console.error('Error al eliminar el tipo de instalación:', error);
-      this.notificationService.error(
-        'No fue posible eliminar el tipo de instalación. Puede que tenga instalaciones asociadas.',
-      );
+      this.notificationService.error(this.errorMapper.mapFacilityError(error));
     }
   }
   onFacilityTypeUpdated(type: FacilityType): void {

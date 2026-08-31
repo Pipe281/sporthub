@@ -1,12 +1,11 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 
-import {
-  AdminReservation,
-  ReservationService,
-} from '../../../../core/services/reservation.service';
+import { ReservationService } from '../../../../core/services/reservation.service';
 import { Facility, FacilityService } from '../../../../core/services/facility.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { SupabaseErrorMapper } from '../../../../core/services/supabase-error-mapper.service';
+import type { AdminReservation } from '../../../../core/types/reservation.types';
 
 @Component({
   selector: 'app-admin-reservations',
@@ -18,6 +17,7 @@ export class AdminReservationsComponent implements OnInit {
   private readonly reservationService = inject(ReservationService);
   private readonly facilityService = inject(FacilityService);
   private readonly notificationService = inject(NotificationService);
+  private readonly errorMapper = inject(SupabaseErrorMapper);
 
   readonly reservations = signal<AdminReservation[]>([]);
   readonly facilities = signal<Facility[]>([]);
@@ -257,7 +257,7 @@ export class AdminReservationsComponent implements OnInit {
       this.notificationService.success('La reserva fue cancelada correctamente.');
     } catch (error) {
       console.error('Error al cancelar la reserva como administrador:', error);
-      this.cancellationError.set('No fue posible cancelar la reserva. Inténtalo nuevamente.');
+      this.cancellationError.set(this.errorMapper.mapReservationError(error));
     } finally {
       this.cancellingReservationId.set(null);
     }

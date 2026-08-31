@@ -4,7 +4,9 @@ import localeEs from '@angular/common/locales/es';
 import { Component, computed, inject, input, OnInit, output, signal } from '@angular/core';
 
 import { CUSTOMER_ROUTES } from '../../../core/constants/app-routes.constants';
-import { ReservationService, TimeSlot } from '../../../core/services/reservation.service';
+import { ReservationService } from '../../../core/services/reservation.service';
+import { SupabaseErrorMapper } from '../../../core/services/supabase-error-mapper.service';
+import type { TimeSlot } from '../../../core/types/reservation.types';
 
 registerLocaleData(localeEs);
 
@@ -22,6 +24,7 @@ interface CalendarDay {
 export class ReservationFormModalComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly reservationService = inject(ReservationService);
+  private readonly errorMapper = inject(SupabaseErrorMapper);
 
   readonly facilityId = input.required<string>();
   readonly closed = output<void>();
@@ -247,23 +250,8 @@ export class ReservationFormModalComponent implements OnInit {
     } catch (error: unknown) {
       console.error('Error al crear la reserva:', error);
 
-      const errorMessage = this.getErrorMessage(error);
-
-      if (errorMessage.includes('RESERVATION_TIME_IS_NO_LONGER_AVAILABLE')) {
-        this.reservationError.set(
-          'El horario seleccionado ya no está disponible. Por favor, selecciona otro horario.',
-        );
-
-        this.currentStep.set(3);
-      } else if (errorMessage.includes('RESERVATION_OUTSIDE_OPERATING_HOURS')) {
-        this.reservationError.set(
-          'El horario seleccionado está fuera del horario de funcionamiento. Por favor, selecciona otro horario.',
-        );
-
-        this.currentStep.set(3);
-      } else {
-        this.reservationError.set('No fue posible crear la reserva. Inténtalo nuevamente.');
-      }
+      this.reservationError.set(this.errorMapper.mapReservationError(error));
+      this.currentStep.set(3);
     } finally {
       this.creatingReservation.set(false);
     }
@@ -319,17 +307,5 @@ export class ReservationFormModalComponent implements OnInit {
   goToMyReservations(): void {
     this.close();
     void this.router.navigateByUrl(CUSTOMER_ROUTES.RESERVATIONS);
-  }
-
-  private getErrorMessage(error: unknown): string {
-    if (error instanceof Error) {
-      return error.message;
-    }
-
-    if (typeof error === 'object' && error !== null && 'message' in error) {
-      return String(error.message);
-    }
-
-    return String(error);
   }
 }

@@ -6,6 +6,7 @@ import { FacilityService, FacilityType } from '../../../core/services/facility.s
 import { TextInputComponent } from '../text-input/text-input.component';
 import { ButtonComponent } from '../botton/button.component';
 import { NotificationService } from '../../../core/services/notification.service';
+import { SupabaseErrorMapper } from '../../../core/services/supabase-error-mapper.service';
 
 @Component({
   selector: 'app-facility-type-form-modal',
@@ -17,6 +18,7 @@ export class FacilityTypeFormModalComponent implements OnChanges {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly facilityService = inject(FacilityService);
   private readonly notificationService = inject(NotificationService);
+  private readonly errorMapper = inject(SupabaseErrorMapper);
 
   readonly facilityType = input<FacilityType | null>(null);
   readonly closed = output<void>();
@@ -86,7 +88,7 @@ export class FacilityTypeFormModalComponent implements OnChanges {
     } catch (error) {
       console.error('Error al guardar el tipo de instalación:', error);
 
-      this.notificationService.error('No fue posible guardar el tipo de instalación.');
+      this.notificationService.error(this.errorMapper.mapFacilityError(error));
     } finally {
       this.loading.set(false);
     }
