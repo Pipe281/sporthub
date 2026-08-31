@@ -3,10 +3,8 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 
 import { CustomerService } from '../../../../core/services/customer.service';
 import { FacilityService } from '../../../../core/services/facility.service';
-import {
-  AdminReservation,
-  ReservationService,
-} from '../../../../core/services/reservation.service';
+import { ReservationService } from '../../../../core/services/reservation.service';
+import type { AdminReservation } from '../../../../core/types/reservation.types';
 
 export interface AdminMetrics {
   todayReservations: number;
