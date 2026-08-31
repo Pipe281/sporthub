@@ -1,31 +1,37 @@
-import { Component, inject, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { SupabaseService } from './core/services/supabase.service';
+import { Component, inject, OnInit } from '@angular/core';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs';
+
+import { AuthService } from './core/services/auth.service';
+import { HeaderComponent } from './shared/ui/header/header.component';
+import { NavigationService } from './core/services/navigation.service';
+import { PUBLIC_AUTH_ROUTES } from './core/constants/app-routes.constants';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, HeaderComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
-export class App {
-  //protected readonly title = signal('sporthub');
-
-  private readonly supabaseService = inject(SupabaseService);
+export class App implements OnInit {
+  private readonly router = inject(Router);
+  private readonly navigationService = inject(NavigationService);
 
   ngOnInit(): void {
-    void this.testConnection();
-  }
+    this.router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .subscribe((event) => {
+        // Mantener actualizada la ruta donde se encuentra el usuario.
+        this.navigationService.setCurrentRoute(event.urlAfterRedirects);
 
-  private async testConnection(): Promise<void> {
-    const client = this.supabaseService.getClient();
-    const { data, error } = await client.from('profiles').select('*').limit(1);
-
-    if (error) {
-      console.error('Error de conexión:', error);
-      return;
-    }
-
-    console.log('Conexión exitosa:', data);
+        // Guardar únicamente la última ruta protegida.
+        if (
+          !PUBLIC_AUTH_ROUTES.includes(
+            event.urlAfterRedirects as (typeof PUBLIC_AUTH_ROUTES)[number],
+          )
+        ) {
+          this.navigationService.setLastProtectedRoute(event.urlAfterRedirects);
+        }
+      });
   }
 }

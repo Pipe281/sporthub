@@ -1,0 +1,587 @@
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6"
+  (click)="close()"
+>
+  <div
+    class="relative max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-zinc-800 bg-zinc-900 shadow-2xl"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Header -->
+    <div class="flex items-center justify-between border-b border-zinc-800 px-6 py-5">
+      <div>
+        <h2 class="text-xl font-bold text-white">Nueva reserva</h2>
+
+        <p class="mt-1 text-sm text-zinc-400">Selecciona una fecha y un horario disponible.</p>
+      </div>
+
+      <button
+        type="button"
+        (click)="close()"
+        class="cursor-pointer rounded-lg p-2 text-zinc-400 transition hover:bg-zinc-800 hover:text-white"
+        aria-label="Cerrar"
+      >
+        ✕
+      </button>
+    </div>
+
+    <!-- Stepper -->
+    <div class="border-b border-zinc-800 px-6 py-5">
+      <div class="flex items-center">
+        <!-- Paso 1: Instalación -->
+        <div class="flex items-center gap-3">
+          <div
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm font-bold transition-all duration-300"
+            [class.border-[#9FEA00]]="currentStep() > 1"
+            [class.bg-[#9FEA00]/15]="currentStep() > 1"
+            [class.text-[#9FEA00]]="currentStep() > 1"
+            [class.border-[#9FEA00]]="currentStep() === 1"
+            [class.bg-[#9FEA00]]="currentStep() === 1"
+            [class.text-zinc-950]="currentStep() === 1"
+            [class.ring-4]="currentStep() === 1"
+            [class.ring-[#9FEA00]/20]="currentStep() === 1"
+          >
+            @if (currentStep() > 1) {
+              ✓
+            } @else {
+              1
+            }
+          </div>
+
+          <div class="hidden sm:block">
+            <p
+              class="text-sm font-semibold transition"
+              [class.text-[#9FEA00]]="currentStep() === 1"
+              [class.text-zinc-300]="currentStep() > 1"
+            >
+              Instalación
+            </p>
+
+            <p class="text-xs text-zinc-500">
+              @if (currentStep() > 1) {
+                Seleccionada
+              } @else {
+                Paso actual
+              }
+            </p>
+          </div>
+        </div>
+
+        <!-- Línea -->
+        <div
+          class="mx-4 h-px flex-1 transition-colors duration-300"
+          [class.bg-[#9FEA00]/50]="currentStep() > 1"
+          [class.bg-zinc-800]="currentStep() <= 1"
+        ></div>
+
+        <!-- Paso 2: Fecha -->
+        <div class="flex items-center gap-3">
+          <div
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm font-bold transition-all duration-300"
+            [class.border-[#9FEA00]]="currentStep() > 2"
+            [class.bg-[#9FEA00]/15]="currentStep() > 2"
+            [class.text-[#9FEA00]]="currentStep() > 2"
+            [class.border-[#9FEA00]]="currentStep() === 2"
+            [class.bg-[#9FEA00]]="currentStep() === 2"
+            [class.text-zinc-950]="currentStep() === 2"
+            [class.ring-4]="currentStep() === 2"
+            [class.ring-[#9FEA00]/20]="currentStep() === 2"
+            [class.border-zinc-700]="currentStep() < 2"
+            [class.bg-zinc-800]="currentStep() < 2"
+            [class.text-zinc-500]="currentStep() < 2"
+          >
+            @if (currentStep() > 2) {
+              ✓
+            } @else {
+              2
+            }
+          </div>
+
+          <div class="hidden sm:block">
+            <p
+              class="text-sm font-semibold transition"
+              [class.text-[#9FEA00]]="currentStep() === 2"
+              [class.text-zinc-300]="currentStep() > 2"
+              [class.text-zinc-500]="currentStep() < 2"
+            >
+              Fecha
+            </p>
+
+            <p class="text-xs text-zinc-500">
+              @if (currentStep() > 2) {
+                Seleccionada
+              } @else if (currentStep() === 2) {
+                Paso actual
+              } @else {
+                Selecciona un día
+              }
+            </p>
+          </div>
+        </div>
+
+        <!-- Línea -->
+        <div
+          class="mx-4 h-px flex-1 transition-colors duration-300"
+          [class.bg-[#9FEA00]/50]="currentStep() > 2"
+          [class.bg-zinc-800]="currentStep() <= 2"
+        ></div>
+
+        <!-- Paso 3: Duración y horario -->
+        <div class="flex items-center gap-3">
+          <div
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm font-bold transition-all duration-300"
+            [class.border-[#9FEA00]]="currentStep() > 3"
+            [class.bg-[#9FEA00]/15]="currentStep() > 3"
+            [class.text-[#9FEA00]]="currentStep() > 3"
+            [class.border-[#9FEA00]]="currentStep() === 3"
+            [class.bg-[#9FEA00]]="currentStep() === 3"
+            [class.text-zinc-950]="currentStep() === 3"
+            [class.ring-4]="currentStep() === 3"
+            [class.ring-[#9FEA00]/20]="currentStep() === 3"
+            [class.border-zinc-700]="currentStep() < 3"
+            [class.bg-zinc-800]="currentStep() < 3"
+            [class.text-zinc-500]="currentStep() < 3"
+          >
+            @if (currentStep() > 3) {
+              ✓
+            } @else {
+              3
+            }
+          </div>
+
+          <div class="hidden sm:block">
+            <p
+              class="text-sm font-semibold transition"
+              [class.text-[#9FEA00]]="currentStep() === 3"
+              [class.text-zinc-300]="currentStep() > 3"
+              [class.text-zinc-500]="currentStep() < 3"
+            >
+              Horario
+            </p>
+
+            <p class="text-xs text-zinc-500">
+              @if (currentStep() > 3) {
+                Seleccionado
+              } @else if (currentStep() === 3) {
+                Paso actual
+              } @else {
+                Selecciona un horario
+              }
+            </p>
+          </div>
+        </div>
+
+        <!-- Línea -->
+        <div
+          class="mx-4 h-px flex-1 transition-colors duration-300"
+          [class.bg-[#9FEA00]/50]="currentStep() > 3"
+          [class.bg-zinc-800]="currentStep() <= 3"
+        ></div>
+
+        <!-- Paso 4: Confirmar -->
+        <div class="flex items-center gap-3">
+          <div
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm font-bold transition-all duration-300"
+            [class.border-[#9FEA00]]="currentStep() > 4"
+            [class.bg-[#9FEA00]/15]="currentStep() > 4"
+            [class.text-[#9FEA00]]="currentStep() > 4"
+            [class.border-[#9FEA00]]="currentStep() === 4"
+            [class.bg-[#9FEA00]]="currentStep() === 4"
+            [class.text-zinc-950]="currentStep() === 4"
+            [class.ring-4]="currentStep() === 4"
+            [class.ring-[#9FEA00]/20]="currentStep() === 4"
+            [class.border-zinc-700]="currentStep() < 4"
+            [class.bg-zinc-800]="currentStep() < 4"
+            [class.text-zinc-500]="currentStep() < 4"
+          >
+            @if (reservationSuccess()) {
+              ✓
+            } @else {
+              4
+            }
+          </div>
+
+          <div class="hidden sm:block">
+            <p
+              class="text-sm font-semibold transition"
+              [class.text-[#9FEA00]]="currentStep() === 4"
+              [class.text-zinc-300]="reservationSuccess()"
+              [class.text-zinc-500]="currentStep() < 4"
+            >
+              Confirmar
+            </p>
+
+            <p class="text-xs text-zinc-500">
+              @if (reservationSuccess()) {
+                Completada
+              } @else if (currentStep() === 4) {
+                Paso actual
+              } @else {
+                Revisa tu reserva
+              }
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenido -->
+    <div class="p-6">
+      <!-- Instalación seleccionada -->
+      <div class="mb-6 rounded-xl border border-zinc-800 bg-zinc-950 p-4">
+        <p class="text-xs font-medium text-zinc-500">Instalación seleccionada</p>
+
+        <p class="mt-1 font-medium text-[#9FEA00]">
+          @if (loadingFacility()) {
+            Cargando instalación...
+          } @else {
+            {{ facilityName() ?? 'Instalación no encontrada' }}
+          }
+        </p>
+      </div>
+
+      <!-- Paso 2 -->
+      @if (currentStep() === 1) {
+        <div>
+          <h3 class="text-lg font-semibold text-white">Selecciona una fecha</h3>
+
+          <p class="mt-1 text-sm text-zinc-400">
+            Puedes seleccionar hoy o una fecha durante los próximos dos meses.
+          </p>
+
+          <div class="mt-6 rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
+            <div class="mb-5 flex items-center justify-between gap-3">
+              <button
+                type="button"
+                (click)="goToPreviousMonth()"
+                [disabled]="!canGoPreviousMonth()"
+                aria-label="Mes anterior"
+                class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-lg text-zinc-300 transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:text-zinc-700"
+              >
+                ‹
+              </button>
+
+              <h4 class="text-lg font-semibold text-white">
+                {{ currentMonth() | date: 'MMMM yyyy' : '' : 'es' }}
+              </h4>
+
+              <button
+                type="button"
+                (click)="goToNextMonth()"
+                [disabled]="!canGoNextMonth()"
+                aria-label="Mes siguiente"
+                class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-lg text-zinc-300 transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:text-zinc-700"
+              >
+                ›
+              </button>
+            </div>
+
+            <div class="grid grid-cols-7 gap-2">
+              <div class="text-center text-xs font-semibold text-zinc-500">Lun</div>
+              <div class="text-center text-xs font-semibold text-zinc-500">Mar</div>
+              <div class="text-center text-xs font-semibold text-zinc-500">Mié</div>
+              <div class="text-center text-xs font-semibold text-zinc-500">Jue</div>
+              <div class="text-center text-xs font-semibold text-zinc-500">Vie</div>
+              <div class="text-center text-xs font-semibold text-zinc-500">Sáb</div>
+              <div class="text-center text-xs font-semibold text-zinc-500">Dom</div>
+            </div>
+
+            <div class="mt-3 grid grid-cols-7 gap-2">
+              @for (day of calendarDays(); track day.date.getTime()) {
+                <button
+                  type="button"
+                  [disabled]="!day.currentMonth || !isDateSelectable(day.date)"
+                  (click)="selectDate(day.date)"
+                  class="flex h-10 items-center justify-center rounded-lg text-sm transition"
+                  [class.text-zinc-700]="!day.currentMonth"
+                  [class.text-zinc-300]="day.currentMonth && isDateSelectable(day.date)"
+                  [class.cursor-pointer]="day.currentMonth && isDateSelectable(day.date)"
+                  [class.hover:bg-zinc-800]="day.currentMonth && isDateSelectable(day.date)"
+                  [class.bg-[#9FEA00]]="isToday(day.date)"
+                  [class.font-bold]="isToday(day.date)"
+                  [class.text-zinc-950]="isToday(day.date)"
+                  [class.ring-2]="selectedDate()?.getTime() === day.date.getTime()"
+                  [class.ring-[#9FEA00]]="selectedDate()?.getTime() === day.date.getTime()"
+                >
+                  {{ day.date.getDate() }}
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      }
+      <!-- Paso 2: Duración -->
+      @if (currentStep() === 2) {
+        <section>
+          <button
+            type="button"
+            (click)="goToDateStep()"
+            class="mb-6 cursor-pointer text-sm font-medium text-[#9FEA00] transition hover:underline"
+          >
+            ← Cambiar fecha
+          </button>
+
+          <h2 class="text-xl font-bold text-white">Selecciona la duración</h2>
+
+          <p class="mt-2 text-sm text-zinc-400">
+            Fecha seleccionada:
+
+            <span class="font-medium text-[#9FEA00]">
+              {{ selectedDate() | date: 'fullDate' : undefined : 'es' }}
+            </span>
+          </p>
+
+          <p class="mt-6 text-sm font-semibold text-white">¿Cuánto tiempo deseas reservar?</p>
+
+          <p class="mt-1 text-sm text-zinc-400">Puedes reservar la instalación por 1 o 2 horas.</p>
+
+          <div class="mt-4 grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              (click)="selectDuration(1)"
+              class="cursor-pointer rounded-xl border px-4 py-4 text-left transition"
+              [class.border-[#9FEA00]]="selectedDuration() === 1"
+              [class.bg-[#9FEA00]/10]="selectedDuration() === 1"
+              [class.border-zinc-700]="selectedDuration() !== 1"
+              [class.bg-zinc-950]="selectedDuration() !== 1"
+              [class.hover:border-[#9FEA00]]="selectedDuration() !== 1"
+            >
+              <p
+                class="font-semibold"
+                [class.text-[#9FEA00]]="selectedDuration() === 1"
+                [class.text-white]="selectedDuration() !== 1"
+              >
+                1 hora
+              </p>
+
+              <p class="mt-1 text-xs text-zinc-500">Reserva estándar</p>
+            </button>
+
+            <button
+              type="button"
+              (click)="selectDuration(2)"
+              class="cursor-pointer rounded-xl border px-4 py-4 text-left transition"
+              [class.border-[#9FEA00]]="selectedDuration() === 2"
+              [class.bg-[#9FEA00]/10]="selectedDuration() === 2"
+              [class.border-zinc-700]="selectedDuration() !== 2"
+              [class.bg-zinc-950]="selectedDuration() !== 2"
+              [class.hover:border-[#9FEA00]]="selectedDuration() !== 2"
+            >
+              <p
+                class="font-semibold"
+                [class.text-[#9FEA00]]="selectedDuration() === 2"
+                [class.text-white]="selectedDuration() !== 2"
+              >
+                2 horas
+              </p>
+
+              <p class="mt-1 text-xs text-zinc-500">Reserva extendida</p>
+            </button>
+          </div>
+        </section>
+      }
+      <!-- Paso 3: Horarios -->
+      @if (currentStep() === 3) {
+        <section>
+          <button
+            type="button"
+            (click)="goToDurationStep()"
+            class="mb-6 cursor-pointer text-sm font-medium text-[#9FEA00] transition hover:underline"
+          >
+            ← Cambiar duración
+          </button>
+
+          <h2 class="text-xl font-bold text-white">Selecciona un horario</h2>
+
+          <p class="mt-2 text-sm text-zinc-400">
+            Fecha seleccionada:
+
+            <span class="font-medium text-[#9FEA00]">
+              {{ selectedDate() | date: 'fullDate' : undefined : 'es' }}
+            </span>
+          </p>
+          @if (reservationError()) {
+            <div class="mt-6 rounded-xl border border-red-900/50 bg-red-950/30 p-4">
+              <p class="text-sm text-red-400">
+                {{ reservationError() }}
+              </p>
+            </div>
+          }
+          <!-- Loading -->
+          @if (loadingSlots()) {
+            <div class="flex min-h-40 items-center justify-center">
+              <p class="text-zinc-400">Cargando horarios disponibles...</p>
+            </div>
+          }
+
+          <!-- Error -->
+          @else if (slotsError()) {
+            <div class="mt-6 rounded-xl border border-red-900/50 bg-red-950/30 p-5 text-center">
+              <p class="text-red-400">No fue posible cargar los horarios disponibles.</p>
+            </div>
+          }
+
+          <!-- Sin horarios -->
+          @else if (timeSlots().length === 0) {
+            <div class="mt-6 rounded-xl border border-zinc-800 bg-zinc-950 p-6 text-center">
+              <p class="text-zinc-400">No hay horarios disponibles para esta fecha.</p>
+            </div>
+          }
+
+          <!-- Horarios -->
+          @else {
+            <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              @for (slot of timeSlots(); track slot.startAt) {
+                <button
+                  type="button"
+                  (click)="selectTimeSlot(slot)"
+                  class="cursor-pointer rounded-xl border px-4 py-3 text-sm font-medium transition"
+                  [class.border-zinc-700]="selectedTimeSlot()?.startAt !== slot.startAt"
+                  [class.bg-zinc-950]="selectedTimeSlot()?.startAt !== slot.startAt"
+                  [class.text-zinc-300]="selectedTimeSlot()?.startAt !== slot.startAt"
+                  [class.hover:border-[#9FEA00]]="selectedTimeSlot()?.startAt !== slot.startAt"
+                  [class.hover:text-[#9FEA00]]="selectedTimeSlot()?.startAt !== slot.startAt"
+                  [class.border-[#9FEA00]]="selectedTimeSlot()?.startAt === slot.startAt"
+                  [class.bg-[#9FEA00]/10]="selectedTimeSlot()?.startAt === slot.startAt"
+                  [class.text-[#9FEA00]]="selectedTimeSlot()?.startAt === slot.startAt"
+                >
+                  {{ slot.startAt }} - {{ slot.endAt }}
+                </button>
+              }
+            </div>
+            @if (selectedTimeSlot()) {
+              <div class="mt-8 rounded-2xl border border-[#9FEA00]/30 bg-[#9FEA00]/5 p-5">
+                <p class="text-sm font-semibold text-white">Resumen de tu reserva</p>
+
+                <div class="mt-4 space-y-3">
+                  <div>
+                    <p class="text-xs text-zinc-500">Fecha</p>
+
+                    <p class="mt-1 text-sm font-medium text-white">
+                      {{ selectedDate() | date: 'fullDate' : undefined : 'es' }}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p class="text-xs text-zinc-500">Horario</p>
+
+                    <p class="mt-1 text-sm font-medium text-[#9FEA00]">
+                      {{ selectedTimeSlot()?.startAt }}
+                      -
+                      {{ selectedTimeSlot()?.endAt }}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  (click)="goToConfirmationStep()"
+                  class="mt-6 w-full cursor-pointer rounded-xl bg-[#9FEA00] px-4 py-3 text-sm font-bold text-zinc-950 transition hover:brightness-110"
+                >
+                  Continuar con la reserva
+                </button>
+              </div>
+            }
+          }
+        </section>
+      }
+      <!-- Paso 4: Confirmación -->
+      @if (currentStep() === 4) {
+        <section>
+          <button
+            type="button"
+            (click)="goToTimeStep()"
+            class="mb-6 cursor-pointer text-sm font-medium text-[#9FEA00] transition hover:underline"
+          >
+            ← Cambiar horario
+          </button>
+
+          <h2 class="text-xl font-bold text-white">Confirma tu reserva</h2>
+
+          <p class="mt-2 text-sm text-zinc-400">Revisa los datos antes de confirmar.</p>
+
+          <div class="mt-6 rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
+            <div class="space-y-5">
+              <!-- Instalación -->
+              <div>
+                <p class="text-xs text-zinc-500">Instalación</p>
+
+                <p class="mt-1 font-medium text-[#9FEA00]">
+                  {{ facilityName() ?? 'Instalación no encontrada' }}
+                </p>
+              </div>
+
+              <div class="h-px bg-zinc-800"></div>
+
+              <!-- Fecha -->
+              <div>
+                <p class="text-xs text-zinc-500">Fecha</p>
+
+                <p class="mt-1 font-medium text-white">
+                  {{ selectedDate() | date: 'fullDate' : undefined : 'es' }}
+                </p>
+              </div>
+
+              <div class="h-px bg-zinc-800"></div>
+
+              <!-- Horario -->
+              <div>
+                <p class="text-xs text-zinc-500">Horario</p>
+
+                <p class="mt-1 font-medium text-[#9FEA00]">
+                  {{ selectedTimeSlot()?.startAt }}
+                  -
+                  {{ selectedTimeSlot()?.endAt }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          @if (reservationError()) {
+            <div class="mt-6 rounded-xl border border-red-900/50 bg-red-950/30 p-4">
+              <p class="text-sm text-red-400">
+                {{ reservationError() }}
+              </p>
+            </div>
+          }
+          <button
+            type="button"
+            (click)="confirmReservation()"
+            [disabled]="creatingReservation()"
+            class="mt-6 w-full cursor-pointer rounded-xl bg-[#9FEA00] px-4 py-3 text-sm font-bold text-zinc-950 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            @if (creatingReservation()) {
+              Creando reserva...
+            } @else {
+              Confirmar reserva
+            }
+          </button>
+          @if (reservationSuccess()) {
+            <div class="fixed inset-0 z-60 flex items-center justify-center bg-black/70 px-4">
+              <div
+                class="w-full max-w-md rounded-2xl border border-[#9FEA00]/30 bg-zinc-900 p-6 text-center shadow-2xl"
+              >
+                <div
+                  class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#9FEA00]/10 text-3xl text-[#9FEA00]"
+                >
+                  ✓
+                </div>
+
+                <h3 class="mt-5 text-xl font-bold text-white">¡Reserva creada!</h3>
+
+                <p class="mt-2 text-sm text-zinc-400">Tu reserva fue creada correctamente.</p>
+
+                <button
+                  type="button"
+                  (click)="goToMyReservations()"
+                  class="mt-6 w-full cursor-pointer rounded-xl bg-[#9FEA00] px-4 py-3 text-sm font-bold text-zinc-950 transition hover:brightness-110"
+                >
+                  Aceptar
+                </button>
+              </div>
+            </div>
+          }
+        </section>
+      }
+    </div>
+  </div>
+</div>

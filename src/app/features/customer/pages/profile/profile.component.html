@@ -1,0 +1,88 @@
+@if (loading()) {
+  <div class="flex justify-center py-20">
+    <p class="text-zinc-400">Cargando perfil...</p>
+  </div>
+} @else if (errorMessage()) {
+  <div class="flex justify-center py-20">
+    <p class="text-red-400">{{ errorMessage() }}</p>
+  </div>
+} @else {
+  <div class="mx-auto max-w-3xl p-8">
+    <!-- Encabezado -->
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold text-white">Mi perfil</h1>
+
+      <p class="mt-2 text-zinc-400">Administra tu información personal.</p>
+    </div>
+    <div class="mb-8 rounded-2xl border border-zinc-800 bg-zinc-800/40 p-5">
+      <p class="text-sm text-zinc-400">Correo electrónico</p>
+
+      <p class="mt-1 text-lg font-medium text-white">{{ currentUser()?.email }}</p>
+    </div>
+    <div class="rounded-3xl border border-zinc-800 bg-zinc-900 p-8 shadow-xl">
+      @if (!editing()) {
+        <div class="space-y-6">
+          <div>
+            <p class="text-sm text-zinc-400">Nombre</p>
+
+            <p class="text-lg font-semibold text-white">
+              {{ profile()?.first_name }}
+            </p>
+          </div>
+
+          <div>
+            <p class="text-sm text-zinc-400">Apellido</p>
+
+            <p class="text-lg font-semibold text-white">
+              {{ profile()?.last_name }}
+            </p>
+          </div>
+
+          <div>
+            <p class="text-sm text-zinc-400">Teléfono</p>
+
+            <p class="text-lg font-semibold text-white">
+              {{ profile()?.phone || 'No registrado' }}
+            </p>
+          </div>
+
+          <div class="pt-4">
+            <app-button type="button" (click)="startEditing()"> Editar perfil </app-button>
+          </div>
+        </div>
+      } @else {
+        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="space-y-5">
+          <app-text-input
+            inputId="first_name"
+            label="Nombre"
+            [control]="profileForm.controls.first_name"
+          />
+
+          <app-text-input
+            inputId="last_name"
+            label="Apellido"
+            [control]="profileForm.controls.last_name"
+          />
+
+          <app-text-input
+            inputId="phone"
+            label="Teléfono"
+            type="tel"
+            placeholder="56 9 1234 5678"
+            [control]="profileForm.controls.phone"
+          />
+
+          <div class="flex justify-end gap-4 pt-4">
+            <app-button type="button" variant="outline" (click)="cancelEditing()">
+              Cancelar
+            </app-button>
+
+            <app-button type="submit" [disabled]="profileForm.invalid">
+              Guardar cambios
+            </app-button>
+          </div>
+        </form>
+      }
+    </div>
+  </div>
+}

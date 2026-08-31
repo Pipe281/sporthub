@@ -1,0 +1,135 @@
+<!-- Nombre -->
+<div class="min-h-screen bg-zinc-950 px-4 py-8 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-4xl">
+    <!-- Encabezado -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-white">Crear instalación</h1>
+
+      <p class="mt-2 text-zinc-400">Ingresa la información de la nueva instalación deportiva.</p>
+    </div>
+
+    <!-- Tarjeta del formulario -->
+    <div class="rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-xl sm:p-8">
+      <form [formGroup]="facilityForm" (ngSubmit)="submit()" class="space-y-6">
+        <app-text-input
+          inputId="name"
+          label="Nombre"
+          placeholder="Ej: Cancha de Pádel 1"
+          [control]="facilityForm.controls.name"
+        />
+
+        <!-- Descripción -->
+        <div>
+          <label for="description" class="mb-2 block text-sm font-medium text-zinc-200">
+            Descripción
+          </label>
+
+          <textarea
+            id="description"
+            formControlName="description"
+            rows="4"
+            placeholder="Describe las características de la instalación..."
+            class="w-full resize-none rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-white transition outline-none focus:border-[#9FEA00]"
+          ></textarea>
+        </div>
+
+        <!-- Tipo -->
+        <div>
+          <label for="facility_type_id" class="mb-2 block text-sm font-medium text-zinc-200">
+            Tipo de instalación
+          </label>
+
+          <select id="facility_type_id" formControlName="facility_type_id" class="select-input">
+            <option value="" disabled>Selecciona un tipo</option>
+
+            @for (type of facilityTypes(); track type.id) {
+              <option [value]="type.id">
+                {{ type.name }}
+              </option>
+            }
+          </select>
+
+          @if (
+            facilityForm.controls.facility_type_id.touched &&
+            facilityForm.controls.facility_type_id.invalid
+          ) {
+            <p class="mt-1 text-sm text-red-400">Debes seleccionar un tipo de instalación.</p>
+          }
+        </div>
+
+        <!-- Capacidad -->
+        <app-text-input
+          inputId="capacity"
+          label="Capacidad"
+          type="number"
+          placeholder="Ej: 4"
+          [control]="facilityForm.controls.capacity"
+        />
+
+        <!-- Precio -->
+        <app-text-input
+          inputId="price_per_hour"
+          label="Precio por hora"
+          type="number"
+          placeholder="Ej: 15000"
+          [control]="facilityForm.controls.price_per_hour"
+        />
+
+        <!-- Estado -->
+        <div>
+          <label for="status" class="mb-2 block text-sm font-medium text-zinc-200"> Estado </label>
+
+          <select id="status" formControlName="status" class="select-input">
+            <option value="ACTIVE">Activa</option>
+            <option value="INACTIVE">Inactiva</option>
+            <option value="MAINTENANCE">En mantenimiento</option>
+          </select>
+        </div>
+
+        <!-- Imagen -->
+        <div>
+          <label for="image" class="mb-2 block text-sm font-medium text-zinc-200"> Imagen </label>
+
+          <input
+            id="image"
+            type="file"
+            accept="image/*"
+            (change)="onImageSelected($event)"
+            class="block w-full cursor-pointer rounded-xl border border-zinc-700 bg-zinc-950 text-sm text-zinc-400 file:mr-4 file:border-0 file:bg-[#9FEA00] file:px-4 file:py-3 file:font-semibold file:text-black hover:file:brightness-110"
+          />
+
+          @if (selectedImage()) {
+            <p class="mt-2 text-sm text-zinc-400">
+              Imagen seleccionada:
+              <span class="text-white">
+                {{ selectedImage()?.name }}
+              </span>
+            </p>
+          } @else {
+            <p class="mt-2 text-xs text-zinc-500">
+              Selecciona una imagen para asociarla a la instalación.
+            </p>
+          }
+        </div>
+
+        <!-- Acciones -->
+        <div
+          class="flex flex-col-reverse gap-3 border-t border-zinc-800 pt-6 sm:flex-row sm:justify-end"
+        >
+          <app-button type="button" variant="outline" [disabled]="isSaving()" (clicked)="cancel()">
+            Cancelar
+          </app-button>
+
+          <app-button
+            type="submit"
+            variant="primary"
+            [disabled]="facilityForm.invalid || isSaving()"
+            [loading]="isSaving()"
+          >
+            Crear instalación
+          </app-button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

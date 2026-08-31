@@ -1,0 +1,26 @@
+.mat-mdc-snack-bar-container.success-snackbar .mat-mdc-snackbar-surface {
+  background-color: #2e7d32 !important;
+  color: white !important;
+}
+
+.mat-mdc-snack-bar-container.error-snackbar .mat-mdc-snackbar-surface {
+  background-color: #c62828 !important;
+  color: white !important;
+}
+
+.mat-mdc-snack-bar-container.warning-snackbar .mat-mdc-snackbar-surface {
+  background-color: #ed6c02 !important;
+  color: white !important;
+}
+
+.mat-mdc-snack-bar-container.info-snackbar .mat-mdc-snackbar-surface {
+  background-color: #1976d2 !important;
+  color: white !important;
+}
+
+.mat-mdc-snack-bar-container.success-snackbar .mat-mdc-button,
+.mat-mdc-snack-bar-container.error-snackbar .mat-mdc-button,
+.mat-mdc-snack-bar-container.warning-snackbar .mat-mdc-button,
+.mat-mdc-snack-bar-container.info-snackbar .mat-mdc-button {
+  color: white !important;
+}
