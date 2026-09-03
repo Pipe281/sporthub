@@ -53,4 +53,81 @@
       Regístrate
     </a>
   </p>
+  <div class="mt-6 flex justify-center">
+    <button
+      type="button"
+      class="login-info-button cursor-pointer"
+      aria-label="Ver informaci&#243;n &#250;til de SportHub"
+      aria-haspopup="dialog"
+      [attr.aria-expanded]="showInfo()"
+      (click)="toggleInfo()"
+    >
+      <mat-icon aria-hidden="true">info</mat-icon>
+      <span>Informaci&#243;n &#250;til</span>
+    </button>
+  </div>
+
+  @if (showInfo()) {
+    <div
+      class="login-info-backdrop"
+      role="presentation"
+      (click)="closeInfo()"
+      (keydown.escape)="closeInfo()"
+    >
+      <section
+        class="login-info-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="login-info-title"
+        (click)="$event.stopPropagation()"
+        (keydown)="$event.stopPropagation()"
+      >
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <div class="mb-3 flex items-center gap-2 text-[#9FEA00]">
+              <mat-icon aria-hidden="true">info</mat-icon>
+              <span class="text-sm font-semibold tracking-wider uppercase">Ayuda</span>
+            </div>
+            <h2 id="login-info-title" class="text-2xl font-bold text-white">Información útil</h2>
+          </div>
+
+          <button
+            type="button"
+            class="login-info-close cursor-pointer"
+            aria-label="Cerrar información útil"
+            (click)="closeInfo()"
+          >
+            <mat-icon aria-hidden="true">close</mat-icon>
+          </button>
+        </div>
+
+        <div class="mt-5 space-y-5 text-sm leading-6 text-zinc-300">
+          <p>
+            SportHub utiliza bloqueos internos y validaciones para proteger la información, evitar
+            eliminaciones accidentales y mantener la consistencia de las reservas.
+          </p>
+          <p>
+            En esta demostración, el registro de nuevas cuentas y la recuperación de contraseña
+            están deshabilitados por configuración del administrador.
+          </p>
+
+          <div>
+            <h3 class="mb-3 font-semibold text-white">Cuentas de prueba</h3>
+            <div class="space-y-3">
+              <div class="login-account-card">
+                <p class="font-semibold text-[#9FEA00]">Cuenta Admin</p>
+                <p><span class="text-zinc-500">Usuario:</span> felipe@test.cl</p>
+                <p><span class="text-zinc-500">Contraseña:</span> Password123</p>
+              </div>
+              <div class="login-account-card">
+                <p class="font-semibold text-[#9FEA00]">Cuenta User</p>
+                <p><span class="text-zinc-500">Usuario:</span> felipe@test3.cl</p>
+                <p><span class="text-zinc-500">Contraseña:</span> 123123123</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  }
 </app-auth-layout>

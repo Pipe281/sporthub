@@ -63,10 +63,15 @@ export class AdminFacilityTypesComponent implements OnInit {
       return;
     }
 
+    this.notificationService.info(
+      'Eliminar tipos de instalación está deshabilitado por el administrador.',
+    );
+    return;
+
     try {
-      await this.facilityService.deleteFacilityType(type.id);
+      await this.facilityService.deleteFacilityType(type!.id);
       this.facilityTypes.update((types) =>
-        types.filter((currentType) => currentType.id !== type.id),
+        types.filter((currentType) => currentType.id !== type!.id),
       );
       this.notificationService.success('Tipo de instalación eliminado correctamente.');
       this.closeDeleteModal();

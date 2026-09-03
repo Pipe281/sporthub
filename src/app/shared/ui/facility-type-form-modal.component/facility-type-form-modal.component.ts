@@ -55,6 +55,13 @@ export class FacilityTypeFormModalComponent implements OnChanges {
     });
   }
   async save(): Promise<void> {
+    if (!this.editing()) {
+      this.notificationService.info(
+        'Crear tipos de instalación está deshabilitado por el administrador.',
+      );
+      return;
+    }
+
     if (this.facilityTypeForm.invalid) {
       this.facilityTypeForm.markAllAsTouched();
       return;

@@ -1,14 +1,13 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
-
 import {
   FacilityService,
   FacilityStatus,
   FacilityType,
   FacilityWithType,
 } from '../../../../core/services/facility.service';
-import { ADMIN_ROUTES } from '../../../../core/constants/app-routes.constants';
 import { FacilityDetailModalComponent } from '../../../../shared/ui/facility-detail-modal/facility-detail-modal.component';
+import { ADMIN_ROUTES } from '../../../../core/constants/app-routes.constants';
 
 @Component({
   selector: 'app-admin-facilities',

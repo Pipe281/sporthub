@@ -19,7 +19,6 @@ import { ButtonComponent } from '../../../../shared/ui/botton/button.component';
     RouterLink,
   ],
   templateUrl: './forgot-password.component.html',
-  styleUrl: './forgot-password.component.scss',
 })
 export class ForgotPasswordComponent {
   private readonly fb = inject(NonNullableFormBuilder);
@@ -32,7 +31,14 @@ export class ForgotPasswordComponent {
     email: ['', [Validators.required, Validators.email]],
   });
 
+  showDisabledMessage(): void {
+    this.notificationService.info('Recuperar contraseña está deshabilitado por el administrador.');
+  }
+
   async sendRecoveryEmail(): Promise<void> {
+    this.showDisabledMessage();
+    return;
+
     if (this.forgotPasswordForm.invalid) {
       this.forgotPasswordForm.markAllAsTouched();
       return;

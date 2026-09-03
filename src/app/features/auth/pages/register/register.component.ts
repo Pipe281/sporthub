@@ -6,6 +6,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { SupabaseErrorMapper } from '../../../../core/services/supabase-error-mapper.service';
 import { NavigationService } from '../../../../core/services/navigation.service';
 import { ProfileService } from '../../../../core/services/profile.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { ButtonComponent } from '../../../../shared/ui/botton/button.component';
 import { AuthLayoutComponent } from '../../../../shared/ui/auth-layout/auth-layout.component';
 import { TextInputComponent } from '../../../../shared/ui/text-input/text-input.component';
@@ -30,6 +31,7 @@ export class RegisterComponent {
   private readonly navigationService = inject(NavigationService);
   private readonly profileService = inject(ProfileService);
   private readonly errorMapper = inject(SupabaseErrorMapper);
+  private readonly notificationService = inject(NotificationService);
 
   readonly loading = signal(false);
   readonly errorMessage = signal('');
@@ -44,7 +46,14 @@ export class RegisterComponent {
     confirmPassword: ['', [Validators.required]],
   });
 
+  showDisabledMessage(): void {
+    this.notificationService.info('Crear una nueva cuenta está deshabilitado por el administrador.');
+  }
+
   async register(): Promise<void> {
+    this.showDisabledMessage();
+    return;
+
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       return;
@@ -67,11 +76,11 @@ export class RegisterComponent {
       // volver a esa ubicación una vez autenticado.
       const returnUrl = this.navigationService.returnUrl();
 
-      if (returnUrl) {
+      if (returnUrl !== null) {
         // La ruta ya fue utilizada, por lo que se elimina para evitar
         // reutilizarla en futuros registros o inicios de sesión.
         this.navigationService.clearReturnUrl();
-        await this.router.navigateByUrl(returnUrl);
+        await this.router.navigateByUrl(returnUrl!);
         return;
       }
 

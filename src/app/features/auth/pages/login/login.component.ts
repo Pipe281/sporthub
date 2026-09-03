@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
 
 import { AuthService } from '../../../../core/services/auth.service';
 import { ProfileService } from '../../../../core/services/profile.service';
@@ -18,6 +19,7 @@ import { TextInputComponent } from '../../../../shared/ui/text-input/text-input.
     AuthLayoutComponent,
     ButtonComponent,
     TextInputComponent,
+    MatIconModule,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
@@ -33,11 +35,20 @@ export class LoginComponent {
   // Estado UI
   readonly loading = signal(false);
   readonly errorMessage = signal('');
+  readonly showInfo = signal(false);
   // Estado del formulario
   readonly loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required]],
   });
+
+  toggleInfo(): void {
+    this.showInfo.update((isVisible) => !isVisible);
+  }
+
+  closeInfo(): void {
+    this.showInfo.set(false);
+  }
 
   async login(): Promise<void> {
     if (this.loginForm.invalid) {

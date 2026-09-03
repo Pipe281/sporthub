@@ -49,6 +49,9 @@ export class CreateFacilityComponent implements OnInit {
   }
 
   async submit(): Promise<void> {
+    this.notificationService.info('Crear instalaciones está deshabilitado por el administrador.');
+    return;
+
     if (this.facilityForm.invalid) {
       this.facilityForm.markAllAsTouched();
       return;
@@ -60,8 +63,8 @@ export class CreateFacilityComponent implements OnInit {
       let imageUrl: string | null = null;
       const image = this.selectedImage();
 
-      if (image) {
-        imageUrl = await this.facilityService.uploadFacilityImage(image);
+      if (image !== null) {
+        imageUrl = await this.facilityService.uploadFacilityImage(image!);
       }
 
       const facility = await this.facilityService.createFacility({

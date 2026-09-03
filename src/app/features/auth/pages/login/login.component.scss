@@ -1,0 +1,87 @@
+.login-info-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid rgb(159 234 0 / 30%);
+  border-radius: 9999px;
+  background: rgb(159 234 0 / 10%);
+  padding: 0.5rem 0.75rem;
+  color: #9fea00;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: background-color 150ms ease;
+}
+
+.login-info-button mat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: #9fea00;
+  color: #18181b;
+  font-size: 13px;
+  line-height: 16px;
+}
+
+.login-info-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(0 0 0 / 70%);
+  padding: 1rem;
+  backdrop-filter: blur(4px);
+}
+
+.login-info-dialog {
+  width: 100%;
+  max-width: 32rem;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid rgb(255 255 255 / 10%);
+  border-radius: 1.5rem;
+  background: #18181b;
+  padding: 1.5rem;
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 50%);
+}
+
+.login-info-close {
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  padding: 0.25rem;
+  color: #a1a1aa;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.login-info-close mat-icon {
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+}
+
+.login-account-card {
+  border: 1px solid rgb(255 255 255 / 10%);
+  border-radius: 1rem;
+  background: rgb(255 255 255 / 5%);
+  padding: 1rem;
+}
+
+.login-info-button:hover {
+  background: rgb(159 234 0 / 20%);
+}
+
+.login-info-button:focus-visible,
+.login-info-close:focus-visible {
+  outline: 2px solid rgb(159 234 0 / 60%);
+  outline-offset: 2px;
+}
+
+.login-info-close:hover {
+  background: rgb(255 255 255 / 10%);
+  color: #fff;
+}
